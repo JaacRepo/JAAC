@@ -1,5 +1,6 @@
 package abs.api.cwi;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -34,7 +35,8 @@ public abstract class LocalActor implements Actor {
 	private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
 	private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> messageQueue = new ConcurrentSkipListMap<>();
 
-	private class MainTask implements Runnable {
+
+    private class MainTask implements Runnable {
 		@Override
 		public void run() {
 			if (takeOrDie()) {

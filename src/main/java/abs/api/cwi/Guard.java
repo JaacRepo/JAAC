@@ -7,13 +7,22 @@ public abstract class Guard {
 	abstract boolean hasFuture();
 
 	abstract void addFuture(Actor a);
-	
 
-	static public Guard convert(Object o) {
+
+
+	static public Guard convert(Supplier<Boolean> s) {
+		return new PureExpressionGuard(s);
+	}
+
+	static public Guard convert(ABSFuture f) {
+		return new FutureGuard(f);
+	}
+
+	static private Guard convert(Object o) {
 		if (o instanceof Supplier) {
-			return new PureExpressionGuard((Supplier<Boolean>) o);
+			return convert((Supplier<Boolean>) o);
 		} else if (o instanceof ABSFuture) {
-			return new FutureGuard((ABSFuture) o);
+			return convert((ABSFuture) o);
 		} else if (o instanceof Guard) {
 			return (Guard) o;
 		} else {

@@ -27,11 +27,6 @@ class Worker(var master: IMaster, var threshold: Int, var size: Int) extends Sug
           if (FastFunctions.boardValid(b,newDepth)) {
             val fut: ABSFuture[List[Array[Int]]] = master.send(() => master.sendWork(b, newDepth, priority - 1))
             futures = fut +: futures
-            this.spawn(fut,  ()=>{
-              println("Future f has completed")
-              println("this actor will run this continuation on the same thread")
-              done();
-            });
           }
           i += 1
         }
