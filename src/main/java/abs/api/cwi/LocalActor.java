@@ -1,6 +1,5 @@
 package abs.api.cwi;
 
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -31,16 +30,16 @@ class AbsKey implements Comparable<AbsKey> {
 }
 
 public abstract class LocalActor implements Actor {
-	private ABSTask<?> runningMessage;
+	private ABSTask<?> runningTask;
 	private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
-	private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> messageQueue = new ConcurrentSkipListMap<>();
+	private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
 
 
     private class MainTask implements Runnable {
 		@Override
 		public void run() {
 			if (takeOrDie()) {
-				runningMessage.run();
+				runningTask.run();
 				ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
 			}
 		}
@@ -49,11 +48,11 @@ public abstract class LocalActor implements Actor {
 	private boolean takeOrDie() {
 		synchronized (mainTaskIsRunning) {
 			// this synchronized block is to remove the race condition between checking if nothing is there to be executed and resetting the flag mainTaskIsRunning
-			for (AbsKey key : messageQueue.keySet()) {
-				ConcurrentLinkedQueue<ABSTask<?>> bucket = messageQueue.get(key);
+			for (AbsKey key : taskQueue.keySet()) {
+				ConcurrentLinkedQueue<ABSTask<?>> bucket = taskQueue.get(key);
 				for (ABSTask<?> absTask : bucket) {
 					if (absTask.evaluateGuard()) {
-						runningMessage = absTask;
+						runningTask = absTask;
 						bucket.remove(absTask);
 						return true;
 					}
@@ -75,25 +74,25 @@ public abstract class LocalActor implements Actor {
 		}
 	}
 
-	private <V> void schedule(ABSTask<V> messageArgument, int priority, boolean strict) {
+	private <V> void  schedule(ABSTask<V> messageArgument, int priority, boolean strict) {
 		if (emptyTask.equals(messageArgument.task)) {
 			return;
 		}
 
 		AbsKey key = new AbsKey(priority, strict);
-		if (messageQueue.containsKey(key)) {
-			messageQueue.get(key).add(messageArgument);
+		if (taskQueue.containsKey(key)) {
+			taskQueue.get(key).add(messageArgument);
 		} else {
 			ConcurrentLinkedQueue<ABSTask<?>> bucket = new ConcurrentLinkedQueue<>();
 			bucket.add(messageArgument);
-			messageQueue.put(key, bucket);
+			taskQueue.put(key, bucket);
 		}
 	}
 
 	@Override
 	public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message);
-		schedule(m, DEFAULT_PRIORITY, NON_STRICT);
+		schedule(m, LOW_PRIORITY, NON_STRICT);
 		if (notRunningThenStart()) {
 			ActorSystem.submit(new MainTask());
 		}
@@ -104,7 +103,7 @@ public abstract class LocalActor implements Actor {
 	public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message, guard);
 		guard.addFuture(this);
-		schedule(m, DEFAULT_PRIORITY, NON_STRICT);
+		schedule(m, LOW_PRIORITY, NON_STRICT);
 		return m.getResultFuture();
 	}
 

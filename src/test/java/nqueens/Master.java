@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 public class Master extends LocalActor {
     int numWorkers;
     int priorities;
-    int solutionsLimit;
     int threshold;
     int size;
 
@@ -36,8 +35,9 @@ public class Master extends LocalActor {
         //Guard nonEmpty = Guard.convert(()->!workersSeq.isEmpty());
         //return spawn(nonEmpty, ()->{
             Worker w = workersSeq.pop();
+            ABSFuture<List<int[]>> outcome = w.send(() -> w.nqueensKernelPar(list, depth, priorities));
             workersSeq.add(w);
-            return w.send(() -> w.nqueensKernelPar(list, depth, priorities));
+            return outcome;
         //});
     }
 
@@ -47,13 +47,14 @@ public class Master extends LocalActor {
     }
 
     public ABSFuture<Void> init() {
+        t1 = System.currentTimeMillis();
         System.out.println("COOP: Boardsize =" + size);
         int[] inArray = new int[size];
         ABSFuture<List<int[]>> resultF = this.send(() -> this.sendWork(inArray, 0, priorities));
         return getSpawn(resultF, result -> {
             System.out.println("Found " + result.size() + " solutions");
             System.out.println("-------------------------------- Program successfully completed! in " + (System.currentTimeMillis() - t1));
-            ActorSystem.shutdown();
+            this.send(() -> this.init());
             return ABSFuture.done();
         });
     }

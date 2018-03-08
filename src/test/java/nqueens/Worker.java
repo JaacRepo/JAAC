@@ -43,11 +43,9 @@ public class Worker extends LocalActor {
                     }
                     i += 1;
                 }
-                master.send(() -> master.finished(this));
                 return getSpawn(ABSFuture.sequence(futures), (list) -> {
                     List<int[]> result = new ArrayList<>();
                     list.forEach(result::addAll);
-//                    master.send(()->master.finished(this));
                     return ABSFuture.done(result);
                 });
             }
