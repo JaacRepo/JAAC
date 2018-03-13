@@ -30,8 +30,7 @@ public class Worker extends LocalActor {
                 //master.send(() -> master.finished(this));
                 return ABSFuture.done(this.nqueensKernelSeq(board, depth));
             } else {
-                int newDepth = depth + 1;
-                int i = 0;
+                int newDepth = depth + 1, i = 0;
                 List<ABSFuture<List<int[]>>> futures = new ArrayList<>();
                 while (i < size) {
                     int[] b = new int[newDepth];

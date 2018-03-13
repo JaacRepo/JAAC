@@ -41,10 +41,10 @@ public class Master extends LocalActor {
         //});
     }
 
-    public ABSFuture<Void> finished(Worker w){
-        workersSeq.add(w);
-        return ABSFuture.done();
-    }
+//    public ABSFuture<Void> finished(Worker w){
+//        workersSeq.add(w);
+//        return ABSFuture.done();
+//    }
 
     public ABSFuture<Void> init() {
         t1 = System.currentTimeMillis();

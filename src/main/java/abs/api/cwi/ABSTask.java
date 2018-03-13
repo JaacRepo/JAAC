@@ -9,16 +9,19 @@ public class ABSTask<V> implements Serializable, Runnable {
 	protected Guard enablingCondition = null;
 	protected final ABSFuture<V> resultFuture;
 	protected Callable<ABSFuture<V>> task;
+	protected int p;
 
-	ABSTask(Callable<ABSFuture<V>> message) {
+	ABSTask(Callable<ABSFuture<V>> message, int p) {
 		this(message, new Guard() {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
 			@Override void addFuture(Actor a) { }
-		});
+			@Override ABSFuture<?> getFuture() { return null;}
+		},p);
 	}
 
-	ABSTask(Callable<ABSFuture<V>> message, Guard enablingCondition) {
+	ABSTask(Callable<ABSFuture<V>> message, Guard enablingCondition, int p) {
+		this.p=p;
 		if (message == null)
 			throw new NullPointerException();
 		this.task = message;
