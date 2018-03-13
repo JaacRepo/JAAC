@@ -36,7 +36,6 @@ public abstract class LocalActor implements Actor {
     private ABSTask<?> runningTask;
     private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
     private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
-    private ConcurrentHashMap<ABSFuture<?>, ConcurrentLinkedQueue<ABSTask<?>>> disabledQueue = new ConcurrentHashMap<>();
 
     private class MainTask implements Runnable {
 		@Override
