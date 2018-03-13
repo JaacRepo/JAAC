@@ -1,6 +1,7 @@
 package abs.api.cwi;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -8,32 +9,34 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static abs.api.cwi.ABSTask.emptyTask;
 
 class AbsKey implements Comparable<AbsKey> {
-	private int priority;
-	private int strict;
+    private int priority;
+    private int strict;
 
-	public AbsKey(int priority, boolean strict) {
-		super();
-		this.priority = priority;
-		this.strict = strict ? 1 : 0;
-	}
+    public AbsKey(int priority, boolean strict) {
+        super();
+        this.priority = priority;
+        this.strict = strict ? 1 : 0;
+    }
 
-	boolean isStrict() { return strict == 1;}
+    boolean isStrict() {
+        return strict == 1;
+    }
 
-	@Override
-	public int compareTo(AbsKey o) {
-		// In ascending order, we should get the highest priority/strictness first
-		if (o.priority == priority) {
-			return o.strict - this.strict;
-		} else
-			return o.priority - this.priority;
-	}
+    @Override
+    public int compareTo(AbsKey o) {
+        // In ascending order, we should get the highest priority/strictness first
+        if (o.priority == priority) {
+            return o.strict - this.strict;
+        } else
+            return o.priority - this.priority;
+    }
 }
 
 public abstract class LocalActor implements Actor {
-	private ABSTask<?> runningTask;
-	private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
-	private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
-
+    private ABSTask<?> runningTask;
+    private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
+    private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
+    private ConcurrentHashMap<ABSFuture<?>, ConcurrentLinkedQueue<ABSTask<?>>> disabledQueue = new ConcurrentHashMap<>();
 
     private class MainTask implements Runnable {
 		@Override
@@ -115,11 +118,11 @@ public abstract class LocalActor implements Actor {
 
 	@Override
 	public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
-		Guard guard = Guard.convert(f);
-		ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard);
-		guard.addFuture(this);
-		schedule(m, priority, strict);
-		return m.getResultFuture();
-	}
+        Guard guard = Guard.convert(f);
+        ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard);
+        guard.addFuture(this);
+        schedule(m, priority, strict);
+        return m.getResultFuture();
+    }
 
 }

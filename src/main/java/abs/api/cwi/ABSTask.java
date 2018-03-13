@@ -15,6 +15,7 @@ public class ABSTask<V> implements Serializable, Runnable {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
 			@Override void addFuture(Actor a) { }
+			@Override ABSFuture<?> getFuture() { return null;}
 		});
 	}
 

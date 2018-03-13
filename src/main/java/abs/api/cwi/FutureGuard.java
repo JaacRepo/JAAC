@@ -20,7 +20,14 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
+	ABSFuture<?	> getFuture() {
+		return future;
+	}
+
+	@Override
 	boolean hasFuture() {
 		return true;
 	}
+
+
 }

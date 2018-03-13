@@ -26,7 +26,7 @@ public class PrimeFilter extends LocalActor {
             localPrimes[avalailableLocalPrimes] = newPrime;
             avalailableLocalPrimes++;
         }
-        else
-            nextFilter = new
+        else{}
+            //nextFilter = new
     }
 }
