@@ -8,6 +8,7 @@ public abstract class Guard {
 
 	abstract void addFuture(Actor a);
 
+	abstract ABSFuture<?> getFuture();
 
 
 	static public Guard convert(Supplier<Boolean> s) {
@@ -50,4 +51,6 @@ public abstract class Guard {
 		}
 		return g;
 	}
+
+
 }

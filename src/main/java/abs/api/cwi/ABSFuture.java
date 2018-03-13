@@ -22,7 +22,7 @@ import static abs.api.cwi.ABSTask.emptyTask;
  */
 public class ABSFuture<V> {
     private V value = null;
-    private ABSFuture<V> target = null;
+    private ABSFuture<V> target = null, parent=null;
     private boolean completed = false;
     private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
 
@@ -80,6 +80,8 @@ public class ABSFuture<V> {
     void forward(ABSFuture<V> target) {
         assert this.target == null;
         this.target = target;
+
+        target.parent=this;
         // First register as dependant then check for completion.
         // This might lead to double notification in some corner cases but doesn't miss any
         target.awaiting(awaitingActors);
@@ -97,7 +99,7 @@ public class ABSFuture<V> {
     }
 
     protected void notifyDependant() {
-        awaitingActors.forEach(localActor -> localActor.send(emptyTask));
+        awaitingActors.forEach(localActor -> localActor.send(()->localActor.enable(this)));
     }
 
     public boolean isDone() {
@@ -110,6 +112,12 @@ public class ABSFuture<V> {
     V getOrNull() {
         return (target == null) ? this.value : target.getOrNull();
     }
+
+    ABSFuture<V> getParent(){
+        return (parent==null)? this: this.parent;
+    }
+
+
 }
 
 class CompletedABSFuture<T> extends ABSFuture<T> {
@@ -184,6 +192,11 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
 
     @Override
     public <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
+        return null;
+    }
+
+    @Override
+    public ABSFuture<Void> enable(ABSFuture<?> vabsFuture) {
         return null;
     }
 }

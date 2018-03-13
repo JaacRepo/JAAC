@@ -19,4 +19,6 @@ public interface Actor {
 	default int compare(Actor o) {
 		return 0;
 	}
+
+    ABSFuture<Void> enable(ABSFuture<?> vabsFuture);
 }

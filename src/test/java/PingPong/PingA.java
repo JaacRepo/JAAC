@@ -36,7 +36,7 @@ public class PingA extends LocalActor {
             ABSFuture<Void> f= pong.send(()->pong.stop());
             spawn(Guard.convert(f),()-> {
                 System.out.println("Done in "+(System.currentTimeMillis()-t1));
-                pingsLeft=40000;
+                pingsLeft=100000;
                 this.send(()->this.start());
                 return ABSFuture.done();
             });

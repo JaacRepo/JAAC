@@ -21,6 +21,11 @@ public class ConjunctionGuard extends Guard {
 	}
 
 	@Override
+	ABSFuture<?> getFuture() {
+		return null;
+	}
+
+	@Override
 	boolean hasFuture() {
 		return left.hasFuture() || right.hasFuture();
 	}
