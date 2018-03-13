@@ -92,7 +92,7 @@ public abstract class LocalActor implements Actor {
 	@Override
 	public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message);
-		schedule(m, LOW_PRIORITY, NON_STRICT);
+		schedule(m, LOW, NON_STRICT);
 		if (notRunningThenStart()) {
 			ActorSystem.submit(new MainTask());
 		}
@@ -103,7 +103,7 @@ public abstract class LocalActor implements Actor {
 	public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message, guard);
 		guard.addFuture(this);
-		schedule(m, LOW_PRIORITY, NON_STRICT);
+		schedule(m, LOW, NON_STRICT);
 		return m.getResultFuture();
 	}
 
