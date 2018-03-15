@@ -36,6 +36,7 @@ public abstract class LocalActor implements Actor {
     private ABSTask<?> runningTask;
     private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
     private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
+
     private ConcurrentHashMap<ABSFuture<?>, ConcurrentLinkedQueue<ABSTask<?>>> disabledQueue = new ConcurrentHashMap<>();
 
     private class MainTask implements Runnable {
@@ -123,8 +124,8 @@ public abstract class LocalActor implements Actor {
 
     @Override
     public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
-        ABSTask<V> m = new ABSTask<>(message, LOW_PRIORITY);
-        schedule(m, LOW_PRIORITY, NON_STRICT);
+        ABSTask<V> m = new ABSTask<>(message, LOW);
+        schedule(m, LOW, NON_STRICT);
         if (notRunningThenStart()) {
             ActorSystem.submit(new MainTask());
         }
@@ -133,12 +134,12 @@ public abstract class LocalActor implements Actor {
 
     @Override
     public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
-        ABSTask<V> m = new ABSTask<>(message, guard, LOW_PRIORITY);
+        ABSTask<V> m = new ABSTask<>(message, guard, LOW);
         guard.addFuture(this);
         if (guard.hasFuture() && !guard.evaluate()) {
             scheduleDisabled(guard.getFuture(), m);
         } else
-            schedule(m, LOW_PRIORITY, NON_STRICT);
+            schedule(m, LOW, NON_STRICT);
         return m.getResultFuture();
     }
 
@@ -148,8 +149,9 @@ public abstract class LocalActor implements Actor {
         return Actor.super.getSpawn(f, message);
     }
 
-    @Override
-    public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
+
+	@Override
+	public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
         Guard guard = Guard.convert(f);
         ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard, priority);
         guard.addFuture(this);
