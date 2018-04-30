@@ -1,31 +1,35 @@
 package typedactor
 
 import abs.api.cwi._
+import abs.api.cwi.ABSFuture.done
 
 
-class Example2 extends SugaredActor with TypedActor[Example2] {
-  def doubler(a: Int) = messageHandler{ absMethod{
-    a * 2
-  }}
+class Example2 extends TypedActor {
+  def doubler(a: Int): ABSFuture[Int] = messageHandler {
+    done(a * 2)
+  }
 }
 
-class Example3 extends SugaredActor with TypedActor[Example3] {
-  def tripler(a: Int) = messageHandler{ absMethod{
-    a * 3
-  }}
+class Example3 extends TypedActor {
+  def tripler(a: Int): ABSFuture[Int] = messageHandler {
+    done(a * 3)
+  }
+
 }
 
 
-class User extends SugaredActor with TypedActor[User] {
-    def call() = messageHandler{ absVoidMethod {
-      val a2 = new Example2
-      val a3 = new Example3
-      import a2._
-      import a3._
+class User extends TypedActor {
+  def call(): ABSFuture[Void] = messageHandler {
+    val a2 = new Example2
+    val a3 = new Example3
 
-      a2 ! doubler(2)
-      a3 ! tripler(2)
-//      a2 ! tripler(2)  // must fail to compile
+    def xxx = a2.messageHandler{
+      done
     }
+
+    a2.doubler(2)
+    a3.tripler(2)
+    //      a2.tripler(2)  // must fail to compile
+    done
   }
 }
