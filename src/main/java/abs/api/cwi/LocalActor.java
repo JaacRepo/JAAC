@@ -40,9 +40,16 @@ public abstract class LocalActor implements Actor {
     private class MainTask implements Runnable {
 		@Override
 		public void run() {
-			if (takeOrDie()) {
-				runningTask.run();
-				ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
+			if (takeOrDie()) /* {
+				if (runningTask.isBlocking()) {
+					BlockingExecutionContext.submit(() -> {
+						runningTask.run();
+						ActorSystem.submit(this);
+					});
+				} else */ {
+					runningTask.run();
+					ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
+//				}
 			}
 		}
 	}
