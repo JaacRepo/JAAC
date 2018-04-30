@@ -1,41 +1,44 @@
 package pingpong
 
 import abs.api.cwi._
+import abs.api.cwi.ABSFuture.done
 
-class PingActor(pongActor: PongActor) extends SugaredActor with TypedActor[PingActor] {
+trait PingInterface extends TypedActor {
+  def start(iterations: Int): ABSFuture[Void]
+  def stop: ABSFuture[Void]
+  def pong: ABSFuture[Void]
+}
+
+class PingActor(pongActor: PongActor) extends PingInterface {
 
   var pingsLeft = 0
   var t1 = 0L
 
-  def this(pingsLeft: Int, pong: PongActor) {
-    this(pong)
-    this.pingsLeft = pingsLeft
-  }
-
-  def start: Message[Void] = messageHandler {
+  override def start(iterations: Int): ABSFuture[Void] = messageHandler {
     t1 = System.currentTimeMillis
-    pongActor ! pongActor.ping(this)
-    pingsLeft -= 1
-    ABSFuture.done
+    pongActor.ping(this)
+    pingsLeft = iterations - 1
+    done
   }
 
-  def ping: Message[Void] = messageHandler {
-    pongActor ! pongActor.ping(this)
-    pingsLeft -= 1
-    ABSFuture.done
+  override def stop: ABSFuture[Void] = messageHandler {
+    println("Done in " + (System.currentTimeMillis - t1))
+    ActorSystem.shutdown()
+    done
   }
 
-  def pong: Message[Void] = messageHandler {
+  private def ping: ABSFuture[Void] = messageHandler {
+    pongActor.ping(this)
+    pingsLeft -= 1
+    done
+  }
+
+  override def pong: ABSFuture[Void] = messageHandler {
     if (pingsLeft > 0)
-      this ! this.ping
+      this.ping
     else {
-      val f = pongActor ! pongActor.stop
-      spawn(Guard.convert(f), () => {
-        println("Done in " + (System.currentTimeMillis - t1))
-        ActorSystem.shutdown()
-        ABSFuture.done
-      })
+      pongActor.stop(this)
     }
-    ABSFuture.done
+    done
   }
 }

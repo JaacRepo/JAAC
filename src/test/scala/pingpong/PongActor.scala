@@ -1,18 +1,25 @@
 package pingpong
 
-import abs.api.cwi.{ABSFuture, SugaredActor, TypedActor}
+import abs.api.cwi.{ABSFuture, TypedActor}
+import abs.api.cwi.ABSFuture.done
 
-class PongActor extends SugaredActor with TypedActor[PongActor] {
+trait PongInterface extends TypedActor {
+  def stop(sender: PingActor): ABSFuture[Void]
+  def ping(sender: PingActor): ABSFuture[Void]
+}
+
+class PongActor extends PongInterface {
   var pongCount = 0
 
-  def ping(sender: PingActor): Message[Void] = messageHandler{
-    sender! sender.pong
+  def ping(sender: PingActor): ABSFuture[Void] = messageHandler {
+    sender.pong
     pongCount += 1
-    ABSFuture.done
+    done
   }
 
-  def stop: Message[Void] = messageHandler {
+  def stop(sender: PingActor): ABSFuture[Void] = messageHandler {
     println("Pong: pongs = " + pongCount)
-    ABSFuture.done
+    sender.stop
+    done
   }
 }
