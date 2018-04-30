@@ -119,8 +119,6 @@ object ABSFutureSugar {
       override def complete(value: List[R]): Unit = ???
       override def spawn[V](guard: Guard, message: Callable[ABSFuture[V]]) = ???
       override def getSpawn[T, V](f: ABSFuture[V], message: CallableGet[T, V], priority: Int, strict: Boolean) = ???
-
-      override def enable(vabsFuture: ABSFuture[_]) = ???
     }
   }
 }
