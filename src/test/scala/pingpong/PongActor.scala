@@ -1,10 +1,10 @@
 package pingpong
 
-import abs.api.cwi.{ABSFuture, TypedActor}
+import abs.api.cwi.{ABSFuture, ActorSystem, TypedActor}
 import abs.api.cwi.ABSFuture.done
 
 trait PongInterface extends TypedActor {
-  def stop(sender: PingActor): ABSFuture[Void]
+  def report: ABSFuture[Void]
   def ping(sender: PingActor): ABSFuture[Void]
 }
 
@@ -17,9 +17,9 @@ class PongActor extends PongInterface {
     done
   }
 
-  def stop(sender: PingActor): ABSFuture[Void] = messageHandler {
+  def report: ABSFuture[Void] = messageHandler {
     println("Pong: pongs = " + pongCount)
-    sender.stop
+    ActorSystem.shutdown()
     done
   }
 }
