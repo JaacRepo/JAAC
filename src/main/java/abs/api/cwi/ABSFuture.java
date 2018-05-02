@@ -26,6 +26,8 @@ public class ABSFuture<V> {
     private boolean completed = false;
     private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
 
+    ABSFuture() {}  // not accessible to arbitrary classes
+
     public static <T> ABSFuture<T> done(T value) {
         return new CompletedABSFuture<>(value);
     }
