@@ -7,8 +7,8 @@ import java.util.function.Supplier
 object TypedActor {
   // using a value class for less runtime overhead
   class GuardHelper private[TypedActor] (val g: Guard) extends AnyVal {
-    def execute[T](continuation: Callable[ABSFuture[T]])(implicit hostActor: LocalActor): ABSFuture[T] = {
-      hostActor.spawn(g, continuation)
+    def execute[V](continuation: => ABSFuture[V])(implicit hostActor: LocalActor): ABSFuture[V] = {
+      hostActor.spawn(g, () => continuation)
     }
   }
 
