@@ -1,12 +1,12 @@
 package eratosthenes
 
 import abs.api.cwi.ABSFuture.done
-import abs.api.cwi.{ActorSystem, TypedActor}
+import abs.api.cwi._
 
 class Sieve(prime: Int) extends TypedActor {
   var next: Option[Sieve] = None
 
-  def divide(toDivide: Int): Future[Option[Int]] = messageHandler {
+  def divide(toDivide: Int): ABSFuture[Option[Int]] = messageHandler {
     if (toDivide % prime == 0) {
       done(None)  // no prime here
     } else {
@@ -22,6 +22,7 @@ class Sieve(prime: Int) extends TypedActor {
 }
 
 object SieveMain extends TypedActor {
+  import TypedActor._
   def main(args: Array[String]): Unit = {
     val two = new Sieve(2)
     val futures = for (i <- 3 to 1000) yield {two.divide(i)}
