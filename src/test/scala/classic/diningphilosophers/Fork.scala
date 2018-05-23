@@ -15,19 +15,18 @@ class Fork(name: String) extends TypedActor with ActorFsm {
   def acquire: ABSFuture[Void] = stateHandler {
     case Free =>
       println(s"Picked up $name")
-      (Taken, done)
+      goto(Taken) andReturn done
     case Taken =>
       println(s"$name is busy...")
-      (Taken, this.acquire)
+      goto(Taken) andReturn this.acquire
   }
 
   def release = stateHandler {
     case Taken =>
       println(s"Put down $name")
-      (Free, done)
+      goto(Free) andReturn done
     case Free =>
       println(s"Releasing a free fork!!! $name")
-      (Free, done)
+      goto(Free) andReturn done
   }
-
 }

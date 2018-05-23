@@ -13,4 +13,14 @@ trait ActorFsm extends TypedActor {
       currentState = newState
       output
   }
+
+  def goto[V](next: TState): FsmHelper[V] = {
+    new FsmHelper(next)
+  }
+
+  class FsmHelper[V] (val next: TState) {
+    def andReturn(retVal: ABSFuture[V]): (TState, ABSFuture[V]) = {
+      (next, retVal)
+    }
+  }
 }

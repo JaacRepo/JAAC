@@ -17,32 +17,32 @@ class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with
     case Thinking =>
       println(s"$name is becoming hungry")
       this.go
-      (Hungry(), done)
+      goto (Hungry()) andReturn  done
     case hungry@Hungry(false, _) =>
       println(s"$name asking for left fork")
       (left.acquire) onSuccess {_ =>
         this.receiveForkLeft
       }
-      (hungry, done)
+      goto(hungry) andReturn  done
     case hungry@Hungry(_, false) =>
       println(s"$name asking for right fork")
       (right.acquire) onSuccess {_ =>
         this.receiveForkRight
       }
-      (hungry, done)
+      goto(hungry) andReturn done
     case Hungry(true, true) =>
       println(s"$name got both forks.")
       this.go
-      (Eating, done)
+      goto(Eating) andReturn done
     case Eating =>
       println(s"$name is done eating")
-      (Thinking, done)
+      goto(Thinking) andReturn done
   }
 
   def receiveForkLeft = stateHandler {
     case Hungry(false, r) =>
       this.go
-      (Hungry(true, r), done)
+      goto(Hungry(true, r)) andReturn done
     case _ =>
       throw new RuntimeException(s"Bad state when receiving left fork: $name")
   }
@@ -50,9 +50,8 @@ class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with
   def receiveForkRight = stateHandler {
     case Hungry(l, false) =>
       this.go
-      (Hungry(l, true), done)
+      goto(Hungry(l, true)) andReturn done
     case _ =>
       throw new RuntimeException(s"Bad state when receiving right fork: $name")
   }
-
 }
