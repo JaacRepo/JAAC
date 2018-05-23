@@ -20,13 +20,13 @@ class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with
       goto (Hungry()) andReturn  done
     case hungry@Hungry(false, _) =>
       println(s"$name asking for left fork")
-      (left.acquire) onSuccess {_ =>
+      left.acquire onSuccess {_ =>
         this.receiveForkLeft
       }
       goto(hungry) andReturn  done
     case hungry@Hungry(_, false) =>
       println(s"$name asking for right fork")
-      (right.acquire) onSuccess {_ =>
+      right.acquire onSuccess {_ =>
         this.receiveForkRight
       }
       goto(hungry) andReturn done
