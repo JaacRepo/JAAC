@@ -3,11 +3,11 @@ package classic.diningphilosophers
 import abs.api.cwi.ABSFuture.done
 import abs.api.cwi.{ABSFuture, ActorFsm, TypedActor}
 
-class Fork(name: String) extends TypedActor with ActorFsm {
-  sealed trait FState extends AbstractState
-  case object Free extends FState
-  case object Taken extends FState
+sealed trait FState
+case object Free extends FState
+case object Taken extends FState
 
+class Fork(name: String) extends TypedActor with ActorFsm {
   override type TState = FState
 
   override def initState = Free

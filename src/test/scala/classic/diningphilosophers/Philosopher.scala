@@ -3,12 +3,12 @@ package classic.diningphilosophers
 import abs.api.cwi.ABSFuture.done
 import abs.api.cwi.{ABSFuture, ActorFsm, TypedActor}
 
-class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with ActorFsm {
-  sealed trait PState extends AbstractState
-  case object Thinking extends PState
-  case class Hungry(left: Boolean = false, right: Boolean = false) extends PState
-  case object Eating extends PState
+sealed trait PState
+case object Thinking extends PState
+case class Hungry(left: Boolean = false, right: Boolean = false) extends PState
+case object Eating extends PState
 
+class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with ActorFsm {
   override type TState = PState
 
   override def initState = Thinking

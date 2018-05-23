@@ -2,8 +2,7 @@ package abs.api.cwi
 
 
 trait ActorFsm extends TypedActor {
-  trait AbstractState
-  type TState <: AbstractState
+  type TState
 
   def initState: TState
 
