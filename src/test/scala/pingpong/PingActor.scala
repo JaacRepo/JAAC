@@ -19,7 +19,7 @@ class PingActor(pongActor: PongActor) extends PingInterface {
     pingsLeft = iterations - 1
     on (pingsLeft == 0) execute {
       println("Done in " + (System.currentTimeMillis - t1))
-      pongActor.report
+      this.start(100000)
     }
   }
 
@@ -32,7 +32,6 @@ class PingActor(pongActor: PongActor) extends PingInterface {
   override def pong: ABSFuture[Void] = messageHandler {
     if (pingsLeft > 0)
       this.ping
-
     done
   }
 }
