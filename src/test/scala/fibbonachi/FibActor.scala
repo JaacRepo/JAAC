@@ -48,7 +48,10 @@ class FibActor(parent: FibActor) extends TypedActor{
       t1=System.currentTimeMillis()
       result=0
       respReceived=0
+
+      //delete this part to run only once
       this.request(25)
+      //
     }
   }
 

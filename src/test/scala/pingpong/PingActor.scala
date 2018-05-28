@@ -19,7 +19,10 @@ class PingActor(pongActor: PongActor) extends PingInterface {
     pingsLeft = iterations - 1
     on (pingsLeft == 0) execute {
       println("Done in " + (System.currentTimeMillis - t1))
+
+      //delete this to run only once
       this.start(100000)
+      //
     }
   }
 

@@ -24,12 +24,13 @@ class Sieve(prime: Int) extends TypedActor {
 object SieveMain extends TypedActor {
   import TypedActor._
   def main(args: Array[String]): Unit = {
-    val two = new Sieve(2)
-    val futures = for (i <- 3 to 1000) yield {two.divide(i)}
+    var t1 = System.currentTimeMillis()
+    var two = new Sieve(2)
+    var futures = for (i <- 3 to 10000) yield {two.divide(i)}
     sequence(futures) onSuccess { results: List[Option[Int]] =>
       val primes = 2 +: results.flatten
-      println(s"found ${primes.size} primes: " + primes.mkString("[", ", ", "]"))
-      ActorSystem.shutdown()
+      println(s"found ${primes.size} primes: in ${System.currentTimeMillis()-t1} " )
+      this.main(null)
       done
     }
   }

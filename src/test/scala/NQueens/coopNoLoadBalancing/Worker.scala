@@ -2,7 +2,6 @@ package NQueens.coopNoLoadBalancing
 
 import NQueens.common.FastFunctions
 import abs.api.cwi.ABSFuture.done
-import abs.api.cwi.TypedActor.ABSFutureIterableImplicit
 import abs.api.cwi._
 
 class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker {
