@@ -4,7 +4,7 @@ package pingpong
 object MainPingPong {
 
   def main(args: Array[String]): Unit = {
-    val N = 40000
+    val N = 100000
     val pong = new PongActor
     val ping = new PingActor(pong)
     ping.start(N)
