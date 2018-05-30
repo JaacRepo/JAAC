@@ -22,7 +22,6 @@ class Sieve(prime: Int) extends TypedActor {
 }
 
 object SieveMain extends TypedActor {
-  import TypedActor._
   def main(args: Array[String]): Unit = {
     val two = new Sieve(2)
     val futures = for (i <- 3 to 1000) yield {two.divide(i)}

@@ -48,7 +48,7 @@ public abstract class LocalActor implements Actor {
 					});
 				} else */ {
 					runningTask.run();
-					ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
+					ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a fair chance of being scheduled in the meantime
 //				}
 			}
 		}
