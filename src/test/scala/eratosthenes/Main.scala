@@ -2,8 +2,8 @@ package eratosthenes
 
 object Main {
 
-  protected var N: Long = 100000
-  protected var M: Int = 1000
+  protected var N: Long = 700000
+  protected var M: Int = 2000
   protected var debug = false
 
   def main(args: Array[String]): Unit = {

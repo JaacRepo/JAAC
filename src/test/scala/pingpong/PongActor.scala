@@ -17,7 +17,7 @@ class PongActor extends PongInterface {
     done
   }
 
-  def report: ABSFuture[Void] = messageHandler {
+  def stop: ABSFuture[Void] = messageHandler {
     println("Pong: pongs = " + pongCount)
     ActorSystem.shutdown()
     done

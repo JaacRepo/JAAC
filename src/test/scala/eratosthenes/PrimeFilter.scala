@@ -42,9 +42,9 @@ class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int)
       nextFilterActor.exit(m)
     } else {
       val totalPrimes = ((id - 1) * numMaxLocalPrimes) + availableLocalPrimes
-      println("Total primes = " + totalPrimes+ "in "+(System.currentTimeMillis()-m))
-      var N: Long = 100000
-      var M: Int = 1000
+      println("Total primes = " + totalPrimes+ " in "+(System.currentTimeMillis()-m))
+      var N: Long = 700000
+      var M: Int = 2000
 
       //delete this part to have only one run
       val np  = new NumberProducer(N)
