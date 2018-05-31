@@ -3,14 +3,14 @@ package abs.api.cwi;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
-public class ABSTask<V> implements Serializable, Runnable {
+public class Task<V> implements Serializable, Runnable {
 	static Callable<Future<Object>> emptyTask = () -> Future.done(null);
 
 	protected Guard enablingCondition = null;
 	protected final Future<V> resultFuture;
 	protected Callable<Future<V>> task;
 
-	ABSTask(Callable<Future<V>> message) {
+	Task(Callable<Future<V>> message) {
 		this(message, new Guard() {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
@@ -20,7 +20,7 @@ public class ABSTask<V> implements Serializable, Runnable {
 		});
 	}
 
-	ABSTask(Callable<Future<V>> message, Guard enablingCondition) {
+	Task(Callable<Future<V>> message, Guard enablingCondition) {
 		if (message == null)
 			throw new NullPointerException();
 		this.task = message;

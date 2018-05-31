@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import static abs.api.cwi.ABSTask.emptyTask;
+import static abs.api.cwi.Task.emptyTask;
 
 /**
  * A Future can be seen as a reference to an asynchronous computation, that may or may not result in a value returned.

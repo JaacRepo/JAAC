@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static abs.api.cwi.ABSTask.emptyTask;
+import static abs.api.cwi.Task.emptyTask;
 
-class AbsKey implements Comparable<AbsKey> {
+class Key implements Comparable<Key> {
     private int priority;
     private int strict;
 
-    public AbsKey(int priority, boolean strict) {
+    public Key(int priority, boolean strict) {
         super();
         this.priority = priority;
         this.strict = strict ? 1 : 0;
@@ -22,7 +22,7 @@ class AbsKey implements Comparable<AbsKey> {
     }
 
     @Override
-    public int compareTo(AbsKey o) {
+    public int compareTo(Key o) {
         // In ascending order, we should get the highest priority/strictness first
         if (o.priority == priority) {
             return o.strict - this.strict;
@@ -32,9 +32,9 @@ class AbsKey implements Comparable<AbsKey> {
 }
 
 public abstract class LocalActor implements Actor {
-    private ABSTask<?> runningTask;
+    private Task<?> runningTask;
     private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
-    private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
+    private ConcurrentSkipListMap<Key, ConcurrentLinkedQueue<Task<?>>> taskQueue = new ConcurrentSkipListMap<>();
 
     private class MainTask implements Runnable {
 		@Override
@@ -56,12 +56,12 @@ public abstract class LocalActor implements Actor {
 	private boolean takeOrDie() {
 		synchronized (mainTaskIsRunning) {
 			// this synchronized block is to remove the race condition between checking if nothing is there to be executed and resetting the flag mainTaskIsRunning
-			for (AbsKey key : taskQueue.keySet()) {
-				ConcurrentLinkedQueue<ABSTask<?>> bucket = taskQueue.get(key);
-				for (ABSTask<?> absTask : bucket) {
-					if (absTask.evaluateGuard()) {
-						runningTask = absTask;
-						bucket.remove(absTask);
+			for (Key key : taskQueue.keySet()) {
+				ConcurrentLinkedQueue<Task<?>> bucket = taskQueue.get(key);
+				for (Task<?> task : bucket) {
+					if (task.evaluateGuard()) {
+						runningTask = task;
+						bucket.remove(task);
 						return true;
 					}
 				}
@@ -82,16 +82,16 @@ public abstract class LocalActor implements Actor {
 		}
 	}
 
-	private <V> void  schedule(ABSTask<V> messageArgument, int priority, boolean strict) {
+	private <V> void  schedule(Task<V> messageArgument, int priority, boolean strict) {
 		if (emptyTask.equals(messageArgument.task)) {
 			return;
 		}
 
-		AbsKey key = new AbsKey(priority, strict);
+		Key key = new Key(priority, strict);
 		if (taskQueue.containsKey(key)) {
 			taskQueue.get(key).add(messageArgument);
 		} else {
-			ConcurrentLinkedQueue<ABSTask<?>> bucket = new ConcurrentLinkedQueue<>();
+			ConcurrentLinkedQueue<Task<?>> bucket = new ConcurrentLinkedQueue<>();
 			bucket.add(messageArgument);
 			taskQueue.put(key, bucket);
 		}
@@ -99,7 +99,7 @@ public abstract class LocalActor implements Actor {
 
 	@Override
 	public final <V> Future<V> send(Callable<Future<V>> message) {
-		ABSTask<V> m = new ABSTask<>(message);
+		Task<V> m = new Task<>(message);
 		schedule(m, LOW, NON_STRICT);
 		if (notRunningThenStart()) {
 			ActorSystem.submit(new MainTask());
@@ -109,7 +109,7 @@ public abstract class LocalActor implements Actor {
 
 	@Override
 	public final <V> Future<V> spawn(Guard guard, Callable<Future<V>> message) {
-		ABSTask<V> m = new ABSTask<>(message, guard);
+		Task<V> m = new Task<>(message, guard);
 		guard.addFuture(this);
 		schedule(m, LOW, NON_STRICT);
 		return m.getResultFuture();
@@ -124,7 +124,7 @@ public abstract class LocalActor implements Actor {
 	@Override
 	public final <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message, int priority, boolean strict) {
         Guard guard = Guard.convert(f);
-        ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard);
+        Task<T> m = new Task<>(() -> message.run(f.getOrNull()), guard);
         guard.addFuture(this);
         schedule(m, priority, strict);
         return m.getResultFuture();

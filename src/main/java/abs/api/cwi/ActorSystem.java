@@ -1,7 +1,4 @@
-/*
- * The class that will be extended by ABS classes
- * 
- */
+
 package abs.api.cwi;
 
 import java.util.concurrent.ExecutorService;
