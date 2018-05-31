@@ -7,7 +7,7 @@ class FibActor(parent: FibActor) extends TypedActor{
   private var respReceived = 0
   private var t1 = 0L
   private var iter = 10
-  private var N : Int =0;
+  private var N : Int = 0
 
 
   def this(parent: FibActor,t1: Long) {
@@ -19,7 +19,7 @@ class FibActor(parent: FibActor) extends TypedActor{
   def request(n: Int): Future[Void] = messageHandler{
     //if(parent==null)
     //System.out.println("Start "+n)
-    N=n+1;
+    N=n
     if (n <= 2) {
       result = 1
       processResult(1)

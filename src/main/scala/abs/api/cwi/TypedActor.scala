@@ -2,6 +2,7 @@ package abs.api.cwi
 
 import java.lang
 import java.util.concurrent.Callable
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Supplier
 
 object TypedActor {
@@ -30,7 +31,9 @@ trait TypedActor extends LocalActor {
 
   def sequence[R](futures: Iterable[Future[R]]): Future[List[R]] = {
     new Future[List[R]] with Actor {
-      private var completed = false
+      // this implements the Actor interface to be able to receive the wake-up message but it does not mean that
+      // it is thread-safe by itself. Therefore we use an atomic boolean to ensure safety.
+      private var completed = new AtomicBoolean(false)
 
       override def awaiting(actor: Actor): Unit = {
         super.awaiting(actor)
@@ -38,10 +41,10 @@ trait TypedActor extends LocalActor {
         this.send(null)
       }
 
-      override def isDone: Boolean = completed
+      override def isDone: Boolean = completed.get()
 
       override def getOrNull(): List[R] = {
-        if (completed) {
+        if (completed.get()) {
           futures.map(_.getOrNull()).toList
         } else {
           null
@@ -49,10 +52,8 @@ trait TypedActor extends LocalActor {
       }
 
       override def send[V](message: Callable[Future[V]]): Future[V] = {
-        if (!completed) {
-          completed = futures.forall(_.isDone)
-        }
-        if (completed)
+        completed.compareAndSet(false, futures.forall(_.isDone))
+        if (completed.get())
           notifyDependant()
         null
       }

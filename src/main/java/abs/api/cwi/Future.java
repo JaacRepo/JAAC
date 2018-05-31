@@ -2,6 +2,7 @@ package abs.api.cwi;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static abs.api.cwi.Task.emptyTask;
@@ -122,12 +123,12 @@ class CompletedFuture<T> extends Future<T> {
 
 /**
  * A sequenced future behaves like an actor in the sense that it should be notified by the futures it is awaiting.
- *
- * @param <R>
+ * This implements the Actor interface to be able to receive the wake-up message but it does not mean that
+ * it is thread-safe by itself. Therefore we use an atomic boolean for completed field to ensure safety.
  */
 class SequencedFuture<R> extends Future<List<R>> implements Actor {
     private final Collection<Future<R>> futures;
-    private boolean completed = false;
+    private AtomicBoolean completed = new AtomicBoolean(false);
 
     SequencedFuture(Collection<Future<R>> futures) {
         this.futures = futures;
@@ -142,13 +143,13 @@ class SequencedFuture<R> extends Future<List<R>> implements Actor {
 
     @Override
     public boolean isDone() {
-        return completed;
+        return completed.get();
     }
 
     @Override
     public List<R> getOrNull() {
         // no need to calculate `completed` because it is always done before calling this method
-        if (completed) {
+        if (completed.get()) {
             return futures.stream().map(Future::getOrNull).collect(Collectors.toList());
         }
         else
@@ -157,9 +158,8 @@ class SequencedFuture<R> extends Future<List<R>> implements Actor {
 
     @Override
     public <V> Future<V> send(Callable<Future<V>> message) {
-        if (!completed)
-            completed = futures.stream().allMatch(Future::isDone);
-        if (completed)
+        completed.compareAndSet(false, futures.stream().allMatch(Future::isDone));
+        if (completed.get())
             notifyDependant();
         return null;
     }

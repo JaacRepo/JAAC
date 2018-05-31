@@ -20,7 +20,7 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-    Future<?	> getFuture() {
+    Future<?> getFuture() {
 		return future;
 	}
 

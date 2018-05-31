@@ -4,7 +4,7 @@ import abs.api.cwi.{Future, ActorSystem, TypedActor}
 
 object FibMain {
   def main(args: Array[String]): Unit = {
-    val N : Int  = 23
+    val N : Int  = 25
     val fjRunner = new FibActor(null, System.currentTimeMillis);
     val f = fjRunner.request(N)
   }
@@ -12,10 +12,9 @@ object FibMain {
 
 
 object FibMain2 extends TypedActor {
-  import TypedActor._
 
   val N = 25
-  var rep = 20
+  var rep = 15
 
   def main(args: Array[String]): Unit = {
     doFib
