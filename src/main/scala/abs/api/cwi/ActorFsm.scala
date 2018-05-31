@@ -8,7 +8,7 @@ trait ActorFsm extends TypedActor {
 
   private var currentState: TState = initState
 
-  def stateHandler[V](fn: TState => (TState, ABSFuture[V])): ABSFuture[V] = messageHandler {
+  def stateHandler[V](fn: TState => (TState, Future[V])): Future[V] = messageHandler {
       val (newState, output) = fn(currentState)
       currentState = newState
       output
@@ -19,7 +19,7 @@ trait ActorFsm extends TypedActor {
   }
 
   class FsmHelper[V] (val next: TState) {
-    def andReturn(retVal: ABSFuture[V]): (TState, ABSFuture[V]) = {
+    def andReturn(retVal: Future[V]): (TState, Future[V]) = {
       (next, retVal)
     }
   }

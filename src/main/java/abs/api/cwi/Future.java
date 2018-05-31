@@ -20,20 +20,20 @@ import static abs.api.cwi.ABSTask.emptyTask;
  * internal implementation of an actor is simplified such that whenever an actor has no active work to do an is solely
  * awaiting completion of futures, the actor can free its thread and (so to speak) go to sleep.
  */
-public class ABSFuture<V> {
+public class Future<V> {
     private V value = null;
-    private ABSFuture<V> target = null;
+    private Future<V> target = null;
     private boolean completed = false;
     private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
 
-    ABSFuture() {}  // not accessible to arbitrary classes
+    Future() {}  // not accessible to arbitrary classes
 
-    public static <T> ABSFuture<T> done(T value) {
-        return new CompletedABSFuture<>(value);
+    public static <T> Future<T> done(T value) {
+        return new CompletedFuture<>(value);
     }
 
-    public static ABSFuture<Void> done() {
-        return new CompletedABSFuture<>(null);
+    public static Future<Void> done() {
+        return new CompletedFuture<>(null);
     }
 
     /**
@@ -43,10 +43,10 @@ public class ABSFuture<V> {
      * sequenced future.
      * All input futures must contain the same type of result.
      */
-    public static <R> ABSFuture<List<R>> sequence(Collection<ABSFuture<R>> futures) {
+    public static <R> Future<List<R>> sequence(Collection<Future<R>> futures) {
         if (futures.isEmpty())
             return done(new ArrayList<>());
-        return new SequencedABSFuture<>(futures);
+        return new SequencedFuture<>(futures);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ABSFuture<V> {
      * In case target is already completed before this method registers its own awaiting actors, it will
      * notify them directly.
      */
-    void forward(ABSFuture<V> target) {
+    void forward(Future<V> target) {
         assert this.target == null;
         this.target = target;
         // First register as dependant then check for completion.
@@ -114,8 +114,8 @@ public class ABSFuture<V> {
     }
 }
 
-class CompletedABSFuture<T> extends ABSFuture<T> {
-    CompletedABSFuture(T value) {
+class CompletedFuture<T> extends Future<T> {
+    CompletedFuture(T value) {
         this.complete(value);
     }
 }
@@ -125,11 +125,11 @@ class CompletedABSFuture<T> extends ABSFuture<T> {
  *
  * @param <R>
  */
-class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
-    private final Collection<ABSFuture<R>> futures;
+class SequencedFuture<R> extends Future<List<R>> implements Actor {
+    private final Collection<Future<R>> futures;
     private boolean completed = false;
 
-    SequencedABSFuture(Collection<ABSFuture<R>> futures) {
+    SequencedFuture(Collection<Future<R>> futures) {
         this.futures = futures;
     }
 
@@ -149,16 +149,16 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
     public List<R> getOrNull() {
         // no need to calculate `completed` because it is always done before calling this method
         if (completed) {
-            return futures.stream().map(ABSFuture::getOrNull).collect(Collectors.toList());
+            return futures.stream().map(Future::getOrNull).collect(Collectors.toList());
         }
         else
             return null;
     }
 
     @Override
-    public <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
+    public <V> Future<V> send(Callable<Future<V>> message) {
         if (!completed)
-            completed = futures.stream().allMatch(ABSFuture::isDone);
+            completed = futures.stream().allMatch(Future::isDone);
         if (completed)
             notifyDependant();
         return null;
@@ -170,17 +170,17 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
     }
 
     @Override
-    void forward(ABSFuture<List<R>> dummy) {
+    void forward(Future<List<R>> dummy) {
         throw new UnsupportedOperationException("Cannot forward a sequenced future.");
     }
 
     @Override
-    public <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
+    public <V> Future<V> spawn(Guard guard, Callable<Future<V>> message) {
         return null;
     }
 
     @Override
-    public <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
+    public <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message, int priority, boolean strict) {
         return null;
     }
 }

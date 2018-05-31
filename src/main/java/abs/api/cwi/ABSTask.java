@@ -4,26 +4,27 @@ import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 public class ABSTask<V> implements Serializable, Runnable {
-	static Callable<ABSFuture<Object>> emptyTask = () -> ABSFuture.done(null);
+	static Callable<Future<Object>> emptyTask = () -> Future.done(null);
 
 	protected Guard enablingCondition = null;
-	protected final ABSFuture<V> resultFuture;
-	protected Callable<ABSFuture<V>> task;
+	protected final Future<V> resultFuture;
+	protected Callable<Future<V>> task;
 
-	ABSTask(Callable<ABSFuture<V>> message) {
+	ABSTask(Callable<Future<V>> message) {
 		this(message, new Guard() {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
 			@Override void addFuture(Actor a) { }
-			@Override ABSFuture<?> getFuture() { return null;}
+			@Override
+            Future<?> getFuture() { return null;}
 		});
 	}
 
-	ABSTask(Callable<ABSFuture<V>> message, Guard enablingCondition) {
+	ABSTask(Callable<Future<V>> message, Guard enablingCondition) {
 		if (message == null)
 			throw new NullPointerException();
 		this.task = message;
-		resultFuture = new ABSFuture<>();
+		resultFuture = new Future<>();
 		this.enablingCondition = enablingCondition;
 	}
 
@@ -41,7 +42,7 @@ public class ABSTask<V> implements Serializable, Runnable {
 		}
 	}
 
-	public ABSFuture<V> getResultFuture() {
+	public Future<V> getResultFuture() {
 		return resultFuture;
 	}
 }

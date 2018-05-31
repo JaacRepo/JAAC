@@ -1,6 +1,6 @@
 package fibbonachi
 
-import abs.api.cwi.{ABSFuture, ActorSystem, TypedActor}
+import abs.api.cwi.{Future, ActorSystem, TypedActor}
 
 object FibMain {
   def main(args: Array[String]): Unit = {
@@ -33,7 +33,7 @@ object FibMain2 extends TypedActor {
       } else {
         ActorSystem.shutdown()
       }
-      ABSFuture.done
+      Future.done
     }
   }
 }

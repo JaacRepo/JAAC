@@ -1,12 +1,12 @@
 package eratosthenes
 
-import abs.api.cwi.ABSFuture.done
+import abs.api.cwi.Future.done
 import abs.api.cwi._
 
 class Sieve(prime: Int) extends TypedActor {
   var next: Option[Sieve] = None
 
-  def divide(toDivide: Int): ABSFuture[Option[Int]] = messageHandler {
+  def divide(toDivide: Int): Future[Option[Int]] = messageHandler {
     if (toDivide % prime == 0) {
       done(None)  // no prime here
     } else {

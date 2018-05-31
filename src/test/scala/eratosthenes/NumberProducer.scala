@@ -7,7 +7,7 @@ class NumberProducer(limit: Long) extends TypedActor{
 
   protected var M: Int = 100
   var t1  = System.currentTimeMillis()
-  def filterActor(primeFilter: PrimeFilter): ABSFuture[Void] = messageHandler{
+  def filterActor(primeFilter: PrimeFilter): Future[Void] = messageHandler{
     var candidate=3
     while(candidate<limit){
       primeFilter.longbox(candidate)
@@ -16,7 +16,7 @@ class NumberProducer(limit: Long) extends TypedActor{
     primeFilter.exit(t1)
     //t1 = System.currentTimeMillis()
     //filterActor(new PrimeFilter(1,2,M))
-    ABSFuture.done()
+    Future.done()
   }
 
 }

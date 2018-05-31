@@ -1,11 +1,11 @@
 package pingpong
 
 import abs.api.cwi._
-import abs.api.cwi.ABSFuture.done
+import Future.done
 
 trait PingInterface extends TypedActor {
-  def start(iterations: Int): ABSFuture[Void]
-  def pong: ABSFuture[Void]
+  def start(iterations: Int): Future[Void]
+  def pong: Future[Void]
 }
 
 class PingActor(pongActor: PongActor) extends PingInterface {
@@ -32,13 +32,13 @@ class PingActor(pongActor: PongActor) extends PingInterface {
     done
   }
 
-  private def ping: ABSFuture[Void] = {
+  private def ping: Future[Void] = {
     pongActor.ping(this)
     pingsLeft -= 1
     done
   }
 
-  override def pong: ABSFuture[Void] = messageHandler {
+  override def pong: Future[Void] = messageHandler {
     if (pingsLeft > 0)
       this.ping
 

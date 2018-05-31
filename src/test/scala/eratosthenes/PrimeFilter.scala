@@ -19,10 +19,10 @@ class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int)
     } else {
       nextFilterActor = new PrimeFilter(id + 1, newPrime, numMaxLocalPrimes)
     }
-    ABSFuture.done()
+    Future.done()
   }
 
-  def longbox(candidate:Long): ABSFuture[Void] = messageHandler{
+  def longbox(candidate:Long): Future[Void] = messageHandler{
     var isPrime  = FastFunctions.isLocallyPrime(candidate, localPrimes,0,availableLocalPrimes)
     if(isPrime){
       if(nextFilterActor!=null){
@@ -33,10 +33,10 @@ class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int)
       }
 
     }
-    ABSFuture.done()
+    Future.done()
   }
 
-  def exit(m:Long): ABSFuture[Void] = messageHandler{
+  def exit(m:Long): Future[Void] = messageHandler{
     if (nextFilterActor != null) {
       // Signal next actor for termination
       nextFilterActor.exit(m)
@@ -53,6 +53,6 @@ class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int)
       ///
 
     }
-    ABSFuture.done()
+    Future.done()
   }
 }

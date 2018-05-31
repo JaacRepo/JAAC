@@ -8,22 +8,22 @@ public abstract class Guard {
 
 	abstract void addFuture(Actor a);
 
-	abstract ABSFuture<?> getFuture();
+	abstract Future<?> getFuture();
 
 
 	static public Guard convert(Supplier<Boolean> s) {
 		return new PureExpressionGuard(s);
 	}
 
-	static public Guard convert(ABSFuture f) {
+	static public Guard convert(Future f) {
 		return new FutureGuard(f);
 	}
 
 	static private Guard convert(Object o) {
 		if (o instanceof Supplier) {
 			return convert((Supplier<Boolean>) o);
-		} else if (o instanceof ABSFuture) {
-			return convert((ABSFuture) o);
+		} else if (o instanceof Future) {
+			return convert((Future) o);
 		} else if (o instanceof Guard) {
 			return (Guard) o;
 		} else {

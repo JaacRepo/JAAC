@@ -1,7 +1,7 @@
 package auction
 
-import abs.api.cwi.ABSFuture.done
-import abs.api.cwi.{ABSFuture, TypedActor}
+import abs.api.cwi.Future.done
+import abs.api.cwi.{Future, TypedActor}
 import auction.DataTypes._
 
 import scala.collection.immutable.SortedSet
@@ -34,7 +34,7 @@ class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: 
   private var winners: Map[Route, VickeryAuction] = Map()
   private var unhappy = List[BidderType]()
 
-  def bid(caller: Bidder[BidderType], toBuy: Route, bid: Price, info: BidderType): ABSFuture[Void] =
+  def bid(caller: Bidder[BidderType], toBuy: Route, bid: Price, info: BidderType): Future[Void] =
     messageHandler {
       if (bid > 0) {
         val auctionWinners = winners.getOrElse(toBuy, VickeryAuction())
@@ -45,7 +45,7 @@ class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: 
       done
     }
 
-  def start(): ABSFuture[AuctionOrganizer.Result[BidderType]] = messageHandler {
+  def start(): Future[AuctionOrganizer.Result[BidderType]] = messageHandler {
     println("Starting an auction")
     val futures = bidders.map(bidder => bidder.announce(this, init_goal, itemValues.getOrElse(init_goal, 0)))
     sequence(futures) onSuccess
@@ -64,7 +64,7 @@ class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: 
            case (route, _) =>
              val auction = winners(route)
              val winnerBidders = auction.winners
-             val infoFutures: List[ABSFuture[BidderType]] = winnerBidders.map { bidder =>
+             val infoFutures: List[Future[BidderType]] = winnerBidders.map { bidder =>
                bidder.sold(route)
              }
              sequence(infoFutures) onSuccess { winnerInfo: List[BidderType] =>

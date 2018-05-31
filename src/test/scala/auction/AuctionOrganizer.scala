@@ -1,6 +1,6 @@
 package auction
 
-import abs.api.cwi.ABSFuture.done
+import abs.api.cwi.Future.done
 import abs.api.cwi.TypedActor
 import auction.DataTypes.{Container, Route, Train}
 

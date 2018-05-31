@@ -1,19 +1,19 @@
 package NQueens.coopNoLoadBalancing
 
 import NQueens.common.FastFunctions
-import abs.api.cwi.ABSFuture.done
+import abs.api.cwi.Future.done
 import abs.api.cwi._
 
 class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker {
 
   // This is not a message handler and is called synchronously
-  private def sendWork(list: Array[Int], depth: Int, priorities: Int): ABSFuture[List[Array[Int]]] = {
+  private def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[List[Array[Int]]] = {
     //println(s"Work $depth $this")
     val worker = new Worker(threshold, size)
     worker.nqueensKernelPar(list, depth, priorities)
   }
 
-  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): ABSFuture[List[Array[Int]]] = messageHandler {
+  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): Future[List[Array[Int]]] = messageHandler {
     //println(s"Par $depth $size $priority ${board.length} $this")
     if (size != depth) {
       if (depth >= threshold) {
@@ -21,13 +21,13 @@ class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker 
       } else {
         val newDepth: Int = depth + 1
         var i: Int = 0
-        var futures: List[ABSFuture[List[Array[Int]]]] = List[ABSFuture[List[Array[Int]]]]()
+        var futures: List[Future[List[Array[Int]]]] = List[Future[List[Array[Int]]]]()
         while (i < size) {
           val b: Array[Int] = new Array[Int](newDepth)
           System.arraycopy(board, 0, b, 0, depth)
           b(depth) = i
           if (FastFunctions.boardValid(b, newDepth)) {
-            val fut: ABSFuture[List[Array[Int]]] = this.sendWork(b, newDepth, priority - 1)
+            val fut: Future[List[Array[Int]]] = this.sendWork(b, newDepth, priority - 1)
             futures = fut +: futures
           }
           i += 1

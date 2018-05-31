@@ -2,9 +2,9 @@ package abs.api.cwi;
 
 public class FutureGuard extends Guard {
 
-	public ABSFuture<?> future;
+	public Future<?> future;
 
-	public FutureGuard(ABSFuture<?> future) {
+	public FutureGuard(Future<?> future) {
 		super();
 		this.future = future;
 	}
@@ -20,7 +20,7 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-	ABSFuture<?	> getFuture() {
+    Future<?	> getFuture() {
 		return future;
 	}
 

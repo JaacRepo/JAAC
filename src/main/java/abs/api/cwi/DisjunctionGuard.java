@@ -21,7 +21,7 @@ public class DisjunctionGuard extends Guard {
 	}
 
 	@Override
-	ABSFuture<?> getFuture() {
+    Future<?> getFuture() {
 		return null;
 	}
 

@@ -1,17 +1,17 @@
 package typedactor
 
 import abs.api.cwi._
-import abs.api.cwi.ABSFuture.done
+import Future.done
 
 
 class Example2 extends TypedActor {
-  def doubler(a: Int): ABSFuture[Int] = messageHandler {
+  def doubler(a: Int): Future[Int] = messageHandler {
     done(a * 2)
   }
 }
 
 class Example3 extends TypedActor {
-  def tripler(a: Int): ABSFuture[Int] = messageHandler {
+  def tripler(a: Int): Future[Int] = messageHandler {
     done(a * 3)
   }
 
@@ -19,7 +19,7 @@ class Example3 extends TypedActor {
 
 
 class User extends TypedActor {
-  def call(): ABSFuture[Void] = messageHandler {
+  def call(): Future[Void] = messageHandler {
     val a2 = new Example2
     val a3 = new Example3
 

@@ -16,25 +16,25 @@ class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,
   private var resultCounter: Int = 0
   private val t1 = System.currentTimeMillis()
 
-  def success(solution: Array[Int]): ABSFuture[Void] = messageHandler {
+  def success(solution: Array[Int]): Future[Void] = messageHandler {
       result = solution +: result
       resultCounter = resultCounter + 1
       if (Objects.equals(resultCounter, solutionsLimit)) {
         println(s"Found ${result.size} solutions")
         println("-------------------------------- Program successfully completed! in " + (System.currentTimeMillis() - t1))
         ActorSystem.shutdown()
-        ABSFuture.done()
+        Future.done()
       }
     else
-        ABSFuture.done()
+        Future.done()
     }
 
 
-  def sendWork(list: Array[Int], depth: Int, priorities: Int): ABSFuture[Void] = messageHandler {
+  def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[Void] = messageHandler {
 //    println(s"Work $depth")
     val worker = workers.next()
     val f =worker.nqueensKernelPar(list, depth, priorities)
-    ABSFuture.done()
+    Future.done()
   }
 
   def init = {

@@ -1,7 +1,7 @@
 package classic.diningphilosophers
 
-import abs.api.cwi.ABSFuture.done
-import abs.api.cwi.{ABSFuture, ActorFsm, TypedActor}
+import abs.api.cwi.Future.done
+import abs.api.cwi.{Future, ActorFsm, TypedActor}
 
 sealed trait FState
 case object Free extends FState
@@ -12,7 +12,7 @@ class Fork(name: String) extends TypedActor with ActorFsm {
 
   override def initState = Free
 
-  def acquire: ABSFuture[Void] = stateHandler {
+  def acquire: Future[Void] = stateHandler {
     case Free =>
       println(s"Picked up $name")
       goto(Taken) andReturn done

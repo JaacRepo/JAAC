@@ -1,7 +1,7 @@
 package classic.diningphilosophers
 
-import abs.api.cwi.ABSFuture.done
-import abs.api.cwi.{ABSFuture, ActorFsm, TypedActor}
+import abs.api.cwi.Future.done
+import abs.api.cwi.{Future, ActorFsm, TypedActor}
 
 sealed trait PState
 case object Thinking extends PState
@@ -13,7 +13,7 @@ class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with
 
   override def initState = Thinking
 
-  def go: ABSFuture[Void] = stateHandler {
+  def go: Future[Void] = stateHandler {
     case Thinking =>
       println(s"$name is becoming hungry")
       this.go

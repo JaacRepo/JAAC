@@ -7,13 +7,13 @@ class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, 
 
   private var t1 = System.currentTimeMillis()
 
-  def sendWork(list: Array[Int], depth: Int, priorities: Int): ABSFuture[List[Array[Int]]] = messageHandler {
+  def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[List[Array[Int]]] = messageHandler {
     //println(s"Work $depth")
     val worker = new Worker(threshold, size)
     worker.nqueensKernelPar(list, depth, priorities)
   }
 
-  def init : ABSFuture[Void] = messageHandler {
+  def init : Future[Void] = messageHandler {
     println(s"COOP NO-LB: Boardsize = ${size.toString}, number of solutions should be ${solutionsLimit.toString}")
     val inArray: Array[Int] = new Array[Int](0)
     val f = this.sendWork(inArray, 0, priorities)
@@ -26,7 +26,7 @@ class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, 
       this.init
       //
 
-      ABSFuture.done()
+      Future.done()
     })
       /*(
     })*/

@@ -8,11 +8,11 @@ public interface Actor {
 	int LOW = 0;
 	int HIGH = 1;
 
-	<V> ABSFuture<V> send(Callable<ABSFuture<V>> message);
-	<V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message);
-	<T,V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict);
+	<V> Future<V> send(Callable<Future<V>> message);
+	<V> Future<V> spawn(Guard guard, Callable<Future<V>> message);
+	<T,V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message, int priority, boolean strict);
 
-	default <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message) {
+	default <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message) {
 		return getSpawn(f, message, LOW, NON_STRICT);
 	}
 

@@ -10,9 +10,9 @@ class DSOL extends TypedActor {
            tr: AuctioneerInfo,
            winnerContainers: List[BiddingInfo],
            unhappyTrains: List[BiddingInfo],
-           unhappyContainers: List[BiddingInfo]): ABSFuture[Void] = {
+           unhappyContainers: List[BiddingInfo]): Future[Void] = {
     println(s"done: \nTimeslot: $timeSlot \ndest: $dest \ntr: $tr \nwinners: $winnerContainers \nunhappy: $unhappyTrains $unhappyContainers")
-    ABSFuture.done()
+    Future.done()
   }
 }
 
@@ -44,7 +44,7 @@ object DsolMain extends TypedActor {
     val auctionFuture = organizer.init(5)
     auctionFuture onSuccess { _ =>
       ActorSystem.shutdown()
-      ABSFuture.done
+      Future.done
     }
   }
 }

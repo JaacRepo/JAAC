@@ -21,7 +21,7 @@ public class ConjunctionGuard extends Guard {
 	}
 
 	@Override
-	ABSFuture<?> getFuture() {
+    Future<?> getFuture() {
 		return null;
 	}
 

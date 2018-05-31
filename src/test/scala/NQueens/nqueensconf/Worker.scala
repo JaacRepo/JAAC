@@ -1,7 +1,7 @@
 package NQueens.nqueensconf
 
 import NQueens.common.FastFunctions
-import abs.api.cwi.ABSFuture.done
+import abs.api.cwi.Future.done
 import abs.api.cwi._
 
 
@@ -10,7 +10,7 @@ class Worker(var master: IMaster, var threshold: Int, var size: Int) extends Typ
 //    println("Worker started")
   }
 
-  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): ABSFuture[Void] = messageHandler {
+  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): Future[Void] = messageHandler {
 //    println(s"Par $depth $size $priority ${board.length}")
     if (size != depth) {
       if (depth >= threshold) {

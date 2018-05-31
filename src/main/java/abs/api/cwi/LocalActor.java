@@ -1,7 +1,6 @@
 package abs.api.cwi;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -99,7 +98,7 @@ public abstract class LocalActor implements Actor {
 	}
 
 	@Override
-	public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
+	public final <V> Future<V> send(Callable<Future<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message);
 		schedule(m, LOW, NON_STRICT);
 		if (notRunningThenStart()) {
@@ -109,7 +108,7 @@ public abstract class LocalActor implements Actor {
 	}
 
 	@Override
-	public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
+	public final <V> Future<V> spawn(Guard guard, Callable<Future<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message, guard);
 		guard.addFuture(this);
 		schedule(m, LOW, NON_STRICT);
@@ -118,12 +117,12 @@ public abstract class LocalActor implements Actor {
 
 	// Just make the super implementation final
 	@Override
-	public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message) {
+	public final <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message) {
 		return Actor.super.getSpawn(f, message);
 	}
 
 	@Override
-	public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
+	public final <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message, int priority, boolean strict) {
         Guard guard = Guard.convert(f);
         ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard);
         guard.addFuture(this);

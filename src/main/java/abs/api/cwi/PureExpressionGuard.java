@@ -20,7 +20,7 @@ public class PureExpressionGuard extends Guard {
 	void addFuture(Actor a) { }
 
 	@Override
-	ABSFuture<?> getFuture() {
+    Future<?> getFuture() {
 		return null;
 	}
 

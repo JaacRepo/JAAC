@@ -1,6 +1,6 @@
 package fibbonachi
 
-import abs.api.cwi.{ABSFuture, ActorSystem, TypedActor}
+import abs.api.cwi.{Future, ActorSystem, TypedActor}
 
 class FibActor(parent: FibActor) extends TypedActor{
   private var result = 0
@@ -16,7 +16,7 @@ class FibActor(parent: FibActor) extends TypedActor{
   }
 
 
-  def request(n: Int): ABSFuture[Void] = messageHandler{
+  def request(n: Int): Future[Void] = messageHandler{
     //if(parent==null)
     //System.out.println("Start "+n)
     N=n+1;
@@ -30,14 +30,14 @@ class FibActor(parent: FibActor) extends TypedActor{
       val f2 = new FibActor(this)
       f2.request(n - 2)
     }
-    ABSFuture.done()
+    Future.done()
   }
 
-  def response(n: Int): ABSFuture[Void] = messageHandler {
+  def response(n: Int): Future[Void] = messageHandler {
     respReceived += 1
     result += n
     if (respReceived == 2) processResult(result)
-    ABSFuture.done
+    Future.done
   }
 
   def processResult(n: Int): Unit = {

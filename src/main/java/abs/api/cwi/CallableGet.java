@@ -2,5 +2,5 @@ package abs.api.cwi;
 
 @FunctionalInterface
 public interface CallableGet<T, V> {
-	ABSFuture<T> run(V futValue);
+	Future<T> run(V futValue);
 }
