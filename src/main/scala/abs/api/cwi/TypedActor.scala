@@ -23,7 +23,7 @@ trait TypedActor extends LocalActor {
   }
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
-  implicit class ABSFutureIterableImplicit[V](val futList: Iterable[Future[V]]) {
+  implicit class FutureIterableImplicit[V](val futList: Iterable[Future[V]]) {
     def onSuccessAll[R](continuation: CallableGet[R, List[V]])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(sequence(futList), continuation)
   }

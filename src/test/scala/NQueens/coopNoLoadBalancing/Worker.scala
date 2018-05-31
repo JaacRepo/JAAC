@@ -32,7 +32,7 @@ class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker 
           }
           i += 1
         }
-        new ABSFutureIterableImplicit[List[Array[Int]]](futures).onSuccessAll((list => {
+        new FutureIterableImplicit[List[Array[Int]]](futures).onSuccessAll((list => {
           done(list.flatten)
         }))
 
