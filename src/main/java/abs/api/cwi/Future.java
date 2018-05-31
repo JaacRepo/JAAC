@@ -102,7 +102,7 @@ public class Future<V> {
         awaitingActors.forEach(localActor -> localActor.send(emptyTask));
     }
 
-    public boolean isDone() {
+    boolean isDone() {
         // If in the middle of running this method, a target is added such that I may actually be done, the
         // following code returns not done, but that shouldn't be a problem because the next round will be fine.
         // Though, we should make sure that there will a "next round" and that is taken care of in LocalActor takeOrDie method.
