@@ -43,7 +43,7 @@ class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int)
     } else {
       val totalPrimes = ((id - 1) * numMaxLocalPrimes) + availableLocalPrimes
       println("Total primes = " + totalPrimes+ " in "+(System.currentTimeMillis()-m))
-      var N: Long = 700000
+      var N: Long = 1000000
       var M: Int = 2000
 
       //delete this part to have only one run

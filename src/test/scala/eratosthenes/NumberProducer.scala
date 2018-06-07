@@ -5,7 +5,6 @@ import abs.api.cwi._
 
 class NumberProducer(limit: Long) extends TypedActor{
 
-  protected var M: Int = 100
   var t1  = System.currentTimeMillis()
   def filterActor(primeFilter: PrimeFilter): Future[Void] = messageHandler{
     var candidate=3
