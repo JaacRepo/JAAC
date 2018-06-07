@@ -22,12 +22,12 @@ class PingActor(pongActor: PongActor) extends PingInterface {
     //to use the code in pong, as (pingsLeft==0) will may be checked upon scheduling a new task in this actor, and in this PinPong
     //example we know we can verify this directly in the pong method.
 
-    on (pingsLeft == 0) execute {
+    /*on (pingsLeft == 0) execute {
       val t2 = System.currentTimeMillis
       pongActor.stop
       println(s"Finished in ${t2-t1} milliseconds")
       done
-    }
+    }*/
     //
     done
   }
@@ -44,12 +44,12 @@ class PingActor(pongActor: PongActor) extends PingInterface {
 
     //For benchmarking this simple example it is better to use the block of code below to run several iterations, and obtain faster results
 
-    /*else {
+    else {
       println("Done in " + (System.currentTimeMillis - t1))
       //delete this to run only once
-      this.start(100000000);
+      this.start(100000);
     }
-   */
+
     done
   }
 }
