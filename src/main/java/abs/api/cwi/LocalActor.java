@@ -76,6 +76,14 @@ public abstract class LocalActor implements Actor {
 		}
 	}
 
+	/**
+	 * Having this check synchronized with takeOrDie is necessary for avoiding race conditions like the following:
+	 * When MainTask is about to stop because it found no enabled messages while at the same time a new message
+	 * is being sent who would then need to keep the MainTask running. Without synchronization it could happen that
+	 * the new message thinks the MainTask is still running and will thus pick up a message, while it is about to die.
+	 * Having this synchronization will then let the MainTask first die and then reactivated again by the new message.
+	 * Note that the new message could also be the special emptyTask that notifies the actor that a future is enabled now.
+	 */
 	private boolean notRunningThenStart() {
 		synchronized (mainTaskIsRunning) {
 			return mainTaskIsRunning.compareAndSet(false, true);
