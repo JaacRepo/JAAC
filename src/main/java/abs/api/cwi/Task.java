@@ -35,7 +35,7 @@ public class Task<V> implements Serializable, Runnable {
 	@Override
 	public void run() {
 		try {
-			resultFuture.forward(task.call()); // upon completion, the result is not necessarily ready
+			task.call().backLink(resultFuture);  // upon completion, the result is not necessarily ready
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

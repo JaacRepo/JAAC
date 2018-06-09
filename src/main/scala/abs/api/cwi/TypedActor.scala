@@ -33,7 +33,7 @@ trait TypedActor extends LocalActor {
     new Future[List[R]] with Actor {
       // this implements the Actor interface to be able to receive the wake-up message but it does not mean that
       // it is thread-safe by itself. Therefore we use an atomic boolean to ensure safety.
-      private var completed = new AtomicBoolean(false)
+      private val completed = new AtomicBoolean(false)
 
       override def awaiting(actor: Actor): Unit = {
         super.awaiting(actor)
@@ -54,12 +54,11 @@ trait TypedActor extends LocalActor {
       override def send[V](message: Callable[Future[V]]): Future[V] = {
         completed.compareAndSet(false, futures.forall(_.isDone))
         if (completed.get())
-          notifyDependant()
+          notifyDependants()
         null
       }
 
       // the following methods will never be called
-      override def forward(target: Future[List[R]]): Unit = ???
       override def complete(value: List[R]): Unit = ???
       override def spawn[V](guard: Guard, message: Callable[Future[V]]): Future[V] = ???
       override def getSpawn[T, V](f: Future[V], message: CallableGet[T, V], priority: Int, strict: Boolean): Future[T] = ???
