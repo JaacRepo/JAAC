@@ -24,7 +24,7 @@ import static abs.api.cwi.Task.emptyTask;
 public class Future<V> {
     private V value = null;
     private Future<V> target = null;
-    private boolean completed = false;
+    private AtomicBoolean completed = new AtomicBoolean(false);
     private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
 
     Future() {}  // not accessible to arbitrary classes
@@ -60,7 +60,7 @@ public class Future<V> {
     private void awaiting(Collection<Actor> actors){
         if (target == null) {
             awaitingActors.addAll(actors);  // this is probably not atomic. Is this OK?
-            if (completed) {
+            if (completed.get()) {
                 notifyDependant();
             }
         }
@@ -92,10 +92,10 @@ public class Future<V> {
     }
 
     void complete(V value) {
-        assert (!this.completed);
+        assert (!this.completed.get());
         assert (this.target == null);
         this.value = value;
-        this.completed = true;
+        this.completed.set(true);
         notifyDependant();
     }
 
@@ -107,7 +107,7 @@ public class Future<V> {
         // If in the middle of running this method, a target is added such that I may actually be done, the
         // following code returns not done, but that shouldn't be a problem because the next round will be fine.
         // Though, we should make sure that there will a "next round" and that is taken care of in LocalActor takeOrDie method.
-        return (target == null) ? this.completed : target.isDone();
+        return (target == null) ? this.completed.get() : target.isDone();
     }
 
     V getOrNull() {
