@@ -25,12 +25,12 @@ trait TypedActor extends LocalActor {
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
   implicit class FutureIterableImplicit[V](val futList: Iterable[Future[V]]) {
-    def onSuccessAll[R](continuation: CallableGet[R, List[V]])(implicit hostActor: LocalActor): Future[R] =
+    def onSuccessAll[R](continuation: CallableGet[R, Iterable[V]])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(sequence(futList), continuation)
   }
 
-  def sequence[R](futures: Iterable[Future[R]]): Future[List[R]] = {
-    new Future[List[R]] with Actor {
+  def sequence[R](futures: Iterable[Future[R]]): Future[Iterable[R]] = {
+    new Future[Iterable[R]] with Actor {
       // this implements the Actor interface to be able to receive the wake-up message but it does not mean that
       // it is thread-safe by itself. Therefore we use an atomic boolean to ensure safety.
       private val completed = new AtomicBoolean(false)
@@ -43,9 +43,9 @@ trait TypedActor extends LocalActor {
 
       override def isDone: Boolean = completed.get()
 
-      override def getOrNull(): List[R] = {
+      override def getOrNull(): Iterable[R] = {
         if (completed.get()) {
-          futures.map(_.getOrNull()).toList
+          futures.map(_.getOrNull())
         } else {
           null
         }
@@ -59,7 +59,7 @@ trait TypedActor extends LocalActor {
       }
 
       // the following methods will never be called
-      override def complete(value: List[R]): Unit = ???
+      override def complete(value: Iterable[R]): Unit = ???
       override def spawn[V](guard: Guard, message: Callable[Future[V]]): Future[V] = ???
       override def getSpawn[T, V](f: Future[V], message: CallableGet[T, V], priority: Int, strict: Boolean): Future[T] = ???
     }

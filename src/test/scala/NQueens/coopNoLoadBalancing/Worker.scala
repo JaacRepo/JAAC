@@ -7,13 +7,13 @@ import abs.api.cwi._
 class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker {
 
   // This is not a message handler and is called synchronously
-  private def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[List[Array[Int]]] = {
+  private def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[Iterable[Array[Int]]] = {
     //println(s"Work $depth $this")
     val worker = new Worker(threshold, size)
     worker.nqueensKernelPar(list, depth, priorities)
   }
 
-  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): Future[List[Array[Int]]] = messageHandler {
+  def nqueensKernelPar(board: Array[Int], depth: Int, priority: Int): Future[Iterable[Array[Int]]] = messageHandler {
     //println(s"Par $depth $size $priority ${board.length} $this")
     if (size != depth) {
       if (depth >= threshold) {
@@ -21,20 +21,20 @@ class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker 
       } else {
         val newDepth: Int = depth + 1
         var i: Int = 0
-        var futures: List[Future[List[Array[Int]]]] = List[Future[List[Array[Int]]]]()
+        var futures = List[Future[Iterable[Array[Int]]]]()
         while (i < size) {
           val b: Array[Int] = new Array[Int](newDepth)
           System.arraycopy(board, 0, b, 0, depth)
           b(depth) = i
           if (FastFunctions.boardValid(b, newDepth)) {
-            val fut: Future[List[Array[Int]]] = this.sendWork(b, newDepth, priority - 1)
+            val fut = this.sendWork(b, newDepth, priority - 1)
             futures = fut +: futures
           }
           i += 1
         }
-        new FutureIterableImplicit[List[Array[Int]]](futures).onSuccessAll((list => {
+        futures onSuccessAll (list => {
           done(list.flatten)
-        }))
+        })
 
       }
     } else {

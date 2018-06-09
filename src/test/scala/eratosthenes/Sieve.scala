@@ -26,7 +26,8 @@ object SieveMain extends TypedActor {
     var t1 = System.currentTimeMillis()
     var two = new Sieve(2)
     var futures = for (i <- 3 to 10000) yield {two.divide(i)}
-    sequence(futures) onSuccess { results: List[Option[Int]] =>
+    sequence(futures) onSuccess { resultsIter: Iterable[Option[Int]] =>
+      val results = resultsIter.toList
       val primes = 2 +: results.flatten
       println(s"found ${primes.size} primes: in ${System.currentTimeMillis()-t1} " )
       this.main(null)

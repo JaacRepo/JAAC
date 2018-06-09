@@ -67,8 +67,8 @@ class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: 
              val infoFutures: List[Future[BidderType]] = winnerBidders.map { bidder =>
                bidder.sold(route)
              }
-             sequence(infoFutures) onSuccess { winnerInfo: List[BidderType] =>
-               done(AuctionOrganizer.Result(winnerInfo, auction.prices, unhappy))
+             sequence(infoFutures) onSuccess { winnerInfo: Iterable[BidderType] =>
+               done(AuctionOrganizer.Result(winnerInfo.toList, auction.prices, unhappy))
              }
          }
        })

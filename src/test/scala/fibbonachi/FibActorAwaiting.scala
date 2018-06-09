@@ -12,7 +12,7 @@ class FibActorAwaiting extends TypedActor{
       val ff1 = (new FibActorAwaiting).request(n - 1)
       val ff2 = (new FibActorAwaiting).request(n - 2)
       List(ff1, ff2) onSuccessAll {ns =>
-        Future.done(ns(0) + ns(1))
+        Future.done(ns.head + ns.tail.head)
       }
     }
   }
