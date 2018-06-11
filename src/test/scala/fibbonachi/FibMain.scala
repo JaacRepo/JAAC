@@ -13,7 +13,7 @@ import abs.api.cwi.{Future, ActorSystem, TypedActor}
 
 object FibMain2 extends TypedActor {
 
-  var N = 25
+  var N = 31
   var rep = 7
 
   def main(args: Array[String]): Unit = {
