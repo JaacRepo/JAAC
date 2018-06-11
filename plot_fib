@@ -7,7 +7,7 @@ unset log                               # remove any log-scaling
 unset label                            # remove any previous labels
 #set ytic auto                          # set ytics automatically
 #set logscale x
-set xlabel "Fibbonachi Number (2^x Actors)" font 'Times-Roman,10'
+set xlabel "Fibbonachi Number (2^n Actors)" font 'Times-Roman,10'
 set ylabel "Time (seconds)" font 'Times-Roman,10'
 set xr [24:31]
 set yr [0:70] 
@@ -16,7 +16,7 @@ set terminal pdf
 #set xtics offset 0,0.5
 #set xtics ('0' 6, '1' 7, '2' 8, '4' 9, '8' 10, '16' 11)
 set output 'fib.pdf'
-plot "fib.txt" using 1:2 title 'Scala Actors' with linespoints lt rgb "red",\
- "fib.txt" using 1:3 title 'Akka Actors' with linespoints lt rgb "blue",\
- "fib.txt" using 1:5 title 'JAAC Actors' with linespoints lt rgb "green"
+plot "macfib.txt" using 1:2 title 'Scala Actors' with linespoints lt rgb "red",\
+ "macfib.txt" using 1:3 title 'Akka Actors' with linespoints lt rgb "blue",\
+ "macfib.txt" using 1:4 title 'JAAC Actors' with linespoints lt rgb "green"
 set output
