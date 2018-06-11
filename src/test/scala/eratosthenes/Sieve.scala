@@ -51,12 +51,14 @@ class Sieve(prime: Long, numMax: Int) extends TypedActor {
 }
 
 object SieveMain extends TypedActor {
-  protected var N: Long = 100000
+  protected var N: Long = 1000000
   protected var M: Int = 2000
 
   def main(args: Array[String]): Unit = {
     doSieve
   }
+
+  //var it = 0
 
   private def doSieve: Unit = {
     var t1 = System.currentTimeMillis()
@@ -71,12 +73,9 @@ object SieveMain extends TypedActor {
       val res = three.exit(1);
       res.onSuccess { result: Void =>
         println(System.currentTimeMillis()-t1)
-        N = N + 100000
-        if (N > 1000000)
-          ActorSystem.shutdown()
-        else {
+        N+=1000000
+        if (N <= 10000000)
           doSieve
-        }
         done()
       }
     }

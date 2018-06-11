@@ -12,7 +12,7 @@ class NumberProducer(limit: Long) extends TypedActor{
       primeFilter.longbox(candidate)
       candidate+=2
     }
-    primeFilter.exit(t1)
+    primeFilter.exit(t1,limit)
     //t1 = System.currentTimeMillis()
     //filterActor(new PrimeFilter(1,2,M))
     Future.done()

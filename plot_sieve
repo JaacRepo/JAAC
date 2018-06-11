@@ -9,14 +9,15 @@ unset label                            # remove any previous labels
 #set logscale x
 set xlabel "Total Numbers to Sieve" font 'Times-Roman,10'
 set ylabel "Time (seconds)" font 'Times-Roman,10'
-set xr [90000:1010000]
-set yr [0:20] 
+set xr [900000:10100000]
+set yr [0:1200] 
 #set datafile separator ","
 set terminal pdf
 #set xtics offset 0,0.5
 #set xtics ('0' 6, '1' 7, '2' 8, '4' 9, '8' 10, '16' 11)
 set output 'sieve.pdf'
-plot "sieve.txt" using 1:2 title 'Scala Actors' with linespoints lt rgb "red",\
- "sieve.txt" using 1:3 title 'Akka Actors' with linespoints lt rgb "blue",\
- "sieve.txt" using 1:4 title 'JAAC Actors' with linespoints lt rgb "green"
+plot "bigsieve.txt" using 1:2 title 'Scala Actors' with linespoints lt rgb "red",\
+ "bigsieve.txt" using 1:3 title 'Akka Actors' with linespoints lt rgb "blue",\
+ "bigsieve.txt" using 1:4 title 'JAAC Actors' with linespoints lt rgb "green",\
+ "bigsieve.txt" using 1:5 title 'JAAC Actors with Cooperative Scheduling' with linespoints lt rgb "orange"
 set output
