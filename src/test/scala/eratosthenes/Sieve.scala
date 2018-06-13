@@ -3,35 +3,81 @@ package eratosthenes
 import abs.api.cwi.Future.done
 import abs.api.cwi._
 
-class Sieve(prime: Int) extends TypedActor {
-  var next: Option[Sieve] = None
+class Sieve(prime: Long, numMax: Int) extends TypedActor {
 
-  def divide(toDivide: Int): Future[Option[Int]] = messageHandler {
-    if (toDivide % prime == 0) {
-      done(None)  // no prime here
+  var next: Sieve = null
+  var primes = new Array[Long](numMax);
+  primes(0) = prime;
+  var availableLocalPrimes = 1;
+
+
+  private def handleNewPrime(newPrime: Long): Unit = {
+    if (availableLocalPrimes < numMax) {
+      // Store locally if there is space
+      primes(availableLocalPrimes) = newPrime
+      availableLocalPrimes += 1
     } else {
-      next match {
-        case None =>
-          next = Some(new Sieve(toDivide))
-          done(Some(toDivide))  // found a prime 
-        case Some(nextPrime) =>
-          nextPrime.divide(toDivide)  // delegate
-      }
+      next = new Sieve(newPrime, numMax)
     }
+    Future.done()
+  }
+  def longbox(candidate:Long): Future[Void] = messageHandler{
+    var isPrime  = FastFunctions.isLocallyPrime(candidate, primes,0,availableLocalPrimes)
+    if(isPrime){
+      if(next!=null){
+        next.longbox(candidate)
+      }
+      else{
+        handleNewPrime(candidate)
+      }
+
+    }
+    Future.done()
+  }
+
+  def exit(m:Int): Future[Void] = messageHandler{
+    if (next != null) {
+      // Signal next actor for termination
+      next.exit(m+availableLocalPrimes)
+    } else {
+      val totalPrimes = m + availableLocalPrimes
+      println("Total primes = " + totalPrimes)
+
+      ///
+
+    }
+    Future.done()
   }
 }
 
 object SieveMain extends TypedActor {
+  protected var N: Long = 1000000
+  protected var M: Int = 2000
+
   def main(args: Array[String]): Unit = {
+    doSieve
+  }
+
+  //var it = 0
+
+  private def doSieve: Unit = {
     var t1 = System.currentTimeMillis()
-    var two = new Sieve(2)
-    var futures = for (i <- 3 to 10000) yield {two.divide(i)}
-    sequence(futures) onSuccess { resultsIter: Iterable[Option[Int]] =>
-      val results = resultsIter.toList
-      val primes = 2 +: results.flatten
-      println(s"found ${primes.size} primes: in ${System.currentTimeMillis()-t1} " )
-      this.main(null)
-      done
+    var three = new Sieve(3, M);
+    var i = 5
+    while (i < N) {
+      three.longbox(i)
+      i += 2
+    }
+    val f = three.longbox(N)
+    f onSuccess { results: Void =>
+      val res = three.exit(1);
+      res.onSuccess { result: Void =>
+        println(System.currentTimeMillis()-t1)
+        N+=1000000
+        if (N <= 10000000)
+          doSieve
+        done()
+      }
     }
   }
 }

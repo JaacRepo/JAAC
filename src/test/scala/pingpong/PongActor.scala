@@ -19,7 +19,7 @@ class PongActor extends PongInterface {
 
   override def stop: Future[Void] = messageHandler {
     println("Pong: pongs = " + pongCount)
-    ActorSystem.shutdown()
+    //ActorSystem.shutdown()
     done
   }
 }

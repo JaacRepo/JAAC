@@ -14,7 +14,7 @@ class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,
 
   var result: List[Array[Int]] = List()
   private var resultCounter: Int = 0
-  private val t1 = System.currentTimeMillis()
+  private var t1 = System.currentTimeMillis()
 
   def success(solution: Array[Int]): Future[Void] = messageHandler {
       result = solution +: result
@@ -22,7 +22,11 @@ class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,
       if (Objects.equals(resultCounter, solutionsLimit)) {
         println(s"Found ${result.size} solutions")
         println("-------------------------------- Program successfully completed! in " + (System.currentTimeMillis() - t1))
-        ActorSystem.shutdown()
+        val inArray: Array[Int] = new Array[Int](0)
+        result= List()
+        resultCounter = 0
+        t1 = System.currentTimeMillis()
+        this.sendWork(inArray, 0, priorities)
         Future.done()
       }
     else
@@ -38,7 +42,7 @@ class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,
   }
 
   def init = {
-    println(s"NON-CCOP: Boardsize = ${size.toString}, number of solutions should be ${solutionsLimit.toString}")
+    println(s"NON-COOP: Boardsize = ${size.toString}, number of solutions should be ${solutionsLimit.toString}")
     val inArray: Array[Int] = new Array[Int](0)
     this.sendWork(inArray, 0, priorities)
   }

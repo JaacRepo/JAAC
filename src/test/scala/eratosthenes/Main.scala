@@ -2,7 +2,7 @@ package eratosthenes
 
 object Main {
 
-  protected var N: Long = 700000
+  protected var N: Long = 8000000
   protected var M: Int = 2000
   protected var debug = false
 
