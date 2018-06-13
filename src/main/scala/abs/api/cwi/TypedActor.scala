@@ -20,6 +20,12 @@ object TypedActor {
   }
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
+  implicit class FutureBlockingImplicit[V](val fut: Future[V]) extends AnyVal {
+    def blockingOnSuccess[R](continuation: CallableGet[R, V])(implicit hostActor: LocalActor): Future[R] =
+      hostActor.getSpawn(fut, continuation, Actor.HIGH, Actor.STRICT)
+  }
+
+  // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
   implicit class FutureIterableImplicit[V](val futList: Iterable[Future[V]]) extends AnyVal {
     def onSuccessAll[R](continuation: CallableGet[R, Iterable[V]])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(sequence(futList), continuation)
