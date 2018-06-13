@@ -5,7 +5,7 @@ import abs.api.cwi.{Future, TypedActor}
 class FibActorAwaiting extends TypedActor{
   import TypedActor._
 
-  def request(n: Int): Future[Int] = messageHandler{
+  def request(n: Int): Future[Int] = messageHandler {
     if (n <= 2) {
       Future.done(1)
     }

@@ -1,5 +1,7 @@
 package pingpong
 
+import abs.api.cwi.ActorSystem
+
 
 object MainPingPong {
 
@@ -8,6 +10,7 @@ object MainPingPong {
     val pong = new PongActor
     val ping = new PingActor(pong)
     ping.start(N)
+    Thread.sleep(1000000)
   }
 
 }

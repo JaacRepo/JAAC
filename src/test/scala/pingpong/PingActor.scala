@@ -28,8 +28,8 @@ class PingActor(pongActor: PongActor) extends PingInterface {
 
     on (pingsLeft == 0) execute {
       val t2 = System.currentTimeMillis
+      println(s"Finished in ${t2-t1} milliseconds")
       pongActor.stop
-      pw.println(s"Finished in ${t2-t1} milliseconds")
       it-=1
       //delete this to run only once
       if(it>0)

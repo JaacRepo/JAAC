@@ -1,5 +1,0 @@
-Finished in 787 milliseconds
-Finished in 143 milliseconds
-Finished in 147 milliseconds
-Finished in 112 milliseconds
-Finished in 93 milliseconds
