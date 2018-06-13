@@ -3,6 +3,7 @@ package abs.api.cwi;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static abs.api.cwi.Task.emptyTask;
@@ -36,18 +37,18 @@ public abstract class LocalActor implements Actor {
     private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
     private ConcurrentSkipListMap<Key, ConcurrentLinkedQueue<Task<?>>> taskQueue = new ConcurrentSkipListMap<>();
 
-    private class MainTask implements Runnable {
+    private class MainTask extends RecursiveAction {
 		@Override
-		public void run() {
-			if (takeOrDie()) /* {
-				if (runningTask.isBlocking()) {
+		public void compute() {
+			if (takeOrDie()) {
+			/* 	if (runningTask.isBlocking()) {
 					BlockingExecutionContext.submit(() -> {
 						runningTask.run();
 						ActorSystem.submit(this);
 					});
-				} else */ {
+				} else  {*/
 					runningTask.run();
-					ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a fair chance of being scheduled in the meantime
+					ActorSystem.submit(new MainTask());  // instead of a loop we submit again, thus allowing other actors' tasks to get a fair chance of being scheduled in the meantime
 //				}
 			}
 		}
