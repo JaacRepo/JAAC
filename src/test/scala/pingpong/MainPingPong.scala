@@ -10,7 +10,7 @@ object MainPingPong {
     val pong = new PongActor
     val ping = new PingActor(pong)
     ping.start(N)
-    Thread.sleep(1000000)
+//    Thread.sleep(1000000)
   }
 
 }

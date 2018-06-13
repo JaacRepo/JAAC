@@ -19,7 +19,6 @@ object FibMain2 extends TypedActor {
 
   def main(args: Array[String]): Unit = {
     doFib
-    Thread.sleep(1000000)
   }
 
   private def doFib: Unit = {
