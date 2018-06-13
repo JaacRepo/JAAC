@@ -7,7 +7,7 @@ class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, 
 
   private var t1 = System.currentTimeMillis()
 
-  def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[List[Array[Int]]] = messageHandler {
+  def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[Iterable[Array[Int]]] = messageHandler {
     //println(s"Work $depth")
     val worker = new Worker(threshold, size)
     worker.nqueensKernelPar(list, depth, priorities)

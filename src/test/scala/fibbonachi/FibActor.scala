@@ -6,7 +6,7 @@ class FibActor(parent: FibActor) extends TypedActor{
   private var result = 0
   private var respReceived = 0
   private var t1 = 0L
-  private var iter = 10
+  private var iter = 15
   private var N : Int = 0
 
 
