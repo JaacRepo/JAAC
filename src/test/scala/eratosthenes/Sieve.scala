@@ -51,6 +51,8 @@ class Sieve(prime: Long, numMax: Int) extends TypedActor {
 }
 
 object SieveMain extends TypedActor {
+  import TypedActor._
+
   protected var N: Long = 1000000
   protected var M: Int = 2000
 

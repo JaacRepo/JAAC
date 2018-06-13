@@ -12,19 +12,15 @@ object TypedActor {
       hostActor.spawn(g, () => continuation)
     }
   }
-}
-
-trait TypedActor extends LocalActor {
-  import TypedActor._
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
-  implicit class FutureImplicit[V](val fut: Future[V]) {
+  implicit class FutureImplicit[V](val fut: Future[V]) extends AnyVal {
     def onSuccess[R](continuation: CallableGet[R, V])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(fut, continuation)
   }
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
-  implicit class FutureIterableImplicit[V](val futList: Iterable[Future[V]]) {
+  implicit class FutureIterableImplicit[V](val futList: Iterable[Future[V]]) extends AnyVal {
     def onSuccessAll[R](continuation: CallableGet[R, Iterable[V]])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(sequence(futList), continuation)
   }
@@ -64,6 +60,10 @@ trait TypedActor extends LocalActor {
       override def getSpawn[T, V](f: Future[V], message: CallableGet[T, V], priority: Int, strict: Boolean): Future[T] = ???
     }
   }
+}
+
+trait TypedActor extends LocalActor {
+  import TypedActor._
 
   def messageHandler[V](fn: => Future[V]): Future[V] = {
     hostActor.send(() => fn)

@@ -11,6 +11,7 @@ import scala.collection.immutable.SortedSet
 // NOTE: each bidding agent has to have a comparable unique identifier for reproducibility.
 class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: List[Bidder[BidderType]], numWinners: Int)
     extends TypedActor {
+  import TypedActor._
 
   private case class BidNode(bidder: Bidder[BidderType], price: Price)
   implicit private val ordering: Ordering[BidNode] = Ordering.by(node => (node.price, node.bidder.hashCode())) // ordering of bidders is not important, but to make sure they are different

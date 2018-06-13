@@ -5,6 +5,7 @@ import abs.api.cwi.Future.done
 import abs.api.cwi._
 
 class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker {
+  import TypedActor._
 
   // This is not a message handler and is called synchronously
   private def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[Iterable[Array[Int]]] = {

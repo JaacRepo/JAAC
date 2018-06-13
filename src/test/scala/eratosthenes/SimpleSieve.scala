@@ -22,6 +22,8 @@ class SimpleSieve(prime: Int) extends TypedActor {
 }
 
 object SimpleSieveMain extends TypedActor {
+  import TypedActor._
+
   def main(args: Array[String]): Unit = {
     var t1 = System.currentTimeMillis()
     var two = new SimpleSieve(2)

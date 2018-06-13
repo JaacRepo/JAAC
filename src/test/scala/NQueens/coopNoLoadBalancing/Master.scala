@@ -4,6 +4,7 @@ import abs.api.cwi._
 
 
 class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, var threshold: Int, var size: Int) extends TypedActor with IMaster {
+  import TypedActor._
 
   private var t1 = System.currentTimeMillis()
 

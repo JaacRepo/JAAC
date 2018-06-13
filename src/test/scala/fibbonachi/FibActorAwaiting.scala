@@ -3,6 +3,7 @@ package fibbonachi
 import abs.api.cwi.{Future, TypedActor}
 
 class FibActorAwaiting extends TypedActor{
+  import TypedActor._
 
   def request(n: Int): Future[Int] = messageHandler{
     if (n <= 2) {

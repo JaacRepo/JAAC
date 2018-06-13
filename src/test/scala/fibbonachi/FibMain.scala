@@ -12,6 +12,7 @@ import abs.api.cwi.{Future, ActorSystem, TypedActor}
 
 
 object FibMain2 extends TypedActor {
+  import TypedActor._
 
   var N = 31
   var rep = 7

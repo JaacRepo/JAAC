@@ -9,6 +9,8 @@ case class Hungry(left: Boolean = false, right: Boolean = false) extends PState
 case object Eating extends PState
 
 class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with ActorFsm {
+  import TypedActor._
+
   override type TState = PState
 
   override def initState = Thinking

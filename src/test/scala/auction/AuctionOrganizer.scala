@@ -6,6 +6,7 @@ import auction.DataTypes.{Container, Route, Train}
 
 class AuctionOrganizer(trains: List[Train], containers: List[Container]) extends TypedActor {
   import auction.AuctionOrganizer.Result
+  import TypedActor._
 
   def init(timeSlotNow: Double) = messageHandler {
     val trainBidders = trains.map { train =>

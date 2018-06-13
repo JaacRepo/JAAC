@@ -17,6 +17,8 @@ class DSOL extends TypedActor {
 }
 
 object DsolMain extends TypedActor {
+  import TypedActor._
+
   def main(args: Array[String]): Unit = {
     val nTrains = 10
     val nContainers = 100
