@@ -1,7 +1,7 @@
 package typedactor
 
-import abs.api.cwi._
-import Future.done
+import com.ascoop.Future._
+import com.ascoop.{Future, TypedActor}
 
 
 class Example2 extends TypedActor {

@@ -2,8 +2,8 @@ package pingpong
 
 import java.io.PrintWriter
 
-import abs.api.cwi._
-import Future.done
+import com.ascoop.Future._
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 trait PingInterface extends TypedActor {
   def start(iterations: Int): Future[Void]
@@ -33,7 +33,7 @@ class PingActor(pongActor: PongActor) extends PingInterface {
       it-=1
       //delete this to run only once
       if(it>0)
-      this.start(100000);
+      this.start(1000000);
       else{
         pw.close()
         ActorSystem.shutdown()

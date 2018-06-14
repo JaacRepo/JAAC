@@ -1,11 +1,11 @@
 package NQueens.coopNoLoadBalancing
 
 import NQueens.common.FastFunctions
-import abs.api.cwi.Future.done
-import abs.api.cwi._
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
 
 class Worker(var threshold: Int, var size: Int) extends TypedActor with IWorker {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   // This is not a message handler and is called synchronously
   private def sendWork(list: Array[Int], depth: Int, priorities: Int): Future[Iterable[Array[Int]]] = {

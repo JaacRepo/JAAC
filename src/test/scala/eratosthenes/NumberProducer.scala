@@ -1,7 +1,6 @@
 package eratosthenes
 
-import abs.api.cwi.TypedActor
-import abs.api.cwi._
+import com.ascoop.{Future, TypedActor}
 
 class NumberProducer(limit: Long) extends TypedActor{
 

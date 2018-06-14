@@ -1,5 +1,4 @@
-package abs.api.cwi
-
+package com.ascoop
 
 trait ActorFsm extends TypedActor {
   type TState

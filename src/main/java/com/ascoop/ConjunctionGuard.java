@@ -1,9 +1,9 @@
-package abs.api.cwi;
+package com.ascoop;
 
-public class DisjunctionGuard extends Guard {
+public class ConjunctionGuard extends Guard {
 	private Guard left, right;
 
-	public DisjunctionGuard(Guard left, Guard right) {
+	public ConjunctionGuard(Guard left, Guard right) {
 		super();
 		this.left = left;
 		this.right = right;
@@ -11,13 +11,13 @@ public class DisjunctionGuard extends Guard {
 
 	@Override
 	boolean evaluate() {
-		return left.evaluate() || right.evaluate();
+		return left.evaluate() && right.evaluate();
 	}
 
 	@Override
 	void addFuture(Actor a) {
 		left.addFuture(a);
-		right.addFuture(a);	
+		right.addFuture(a);
 	}
 
 	@Override
@@ -25,11 +25,9 @@ public class DisjunctionGuard extends Guard {
 		return null;
 	}
 
-
 	@Override
 	boolean hasFuture() {
-		return left.hasFuture()||right.hasFuture();
+		return left.hasFuture() || right.hasFuture();
 	}
 
-	
 }

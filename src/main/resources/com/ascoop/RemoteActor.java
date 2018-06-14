@@ -1,4 +1,4 @@
-package abs.api.cwi;
+package com.ascoop;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,4 +1,4 @@
-package abs.api.cwi;
+package com.ascoop;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static abs.api.cwi.Task.emptyTask;
+import static com.ascoop.Task.emptyTask;
 
 class Key implements Comparable<Key> {
     private int priority;

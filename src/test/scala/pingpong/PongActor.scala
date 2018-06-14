@@ -1,7 +1,7 @@
 package pingpong
 
-import abs.api.cwi.{Future, ActorSystem, TypedActor}
-import Future.done
+import com.ascoop.Future._
+import com.ascoop.{Future, TypedActor}
 
 trait PongInterface extends TypedActor {
   def stop: Future[Void]

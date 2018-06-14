@@ -1,12 +1,12 @@
 package pingpong
 
-import abs.api.cwi.ActorSystem
+import com.ascoop.ActorSystem
 
 
 object MainPingPong {
 
   def main(args: Array[String]): Unit = {
-    val N = 100000
+    val N = 1000000
     val pong = new PongActor
     val ping = new PingActor(pong)
     ping.start(N)

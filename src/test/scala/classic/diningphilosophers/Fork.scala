@@ -1,7 +1,8 @@
 package classic.diningphilosophers
 
-import abs.api.cwi.Future.done
-import abs.api.cwi.{Future, ActorFsm, TypedActor}
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorFsm, Future, TypedActor}
 
 sealed trait FState
 case object Free extends FState

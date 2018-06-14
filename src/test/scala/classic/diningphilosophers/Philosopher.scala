@@ -1,7 +1,8 @@
 package classic.diningphilosophers
 
-import abs.api.cwi.Future.done
-import abs.api.cwi.{Future, ActorFsm, TypedActor}
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorFsm, Future, TypedActor}
 
 sealed trait PState
 case object Thinking extends PState
@@ -9,7 +10,7 @@ case class Hungry(left: Boolean = false, right: Boolean = false) extends PState
 case object Eating extends PState
 
 class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with ActorFsm {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   override type TState = PState
 

@@ -1,7 +1,8 @@
 package eratosthenes
 
-import abs.api.cwi.Future.done
-import abs.api.cwi._
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
+import com.ascoop._
 
 class SimpleSieve(prime: Int) extends TypedActor {
   var next: Option[SimpleSieve] = None
@@ -22,7 +23,7 @@ class SimpleSieve(prime: Int) extends TypedActor {
 }
 
 object SimpleSieveMain extends TypedActor {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   def main(args: Array[String]): Unit = {
     var t1 = System.currentTimeMillis()

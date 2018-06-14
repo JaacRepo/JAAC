@@ -2,8 +2,7 @@ package eratosthenes
 
 import java.io.PrintWriter
 
-import abs.api.cwi.TypedActor
-import abs.api.cwi._
+import com.ascoop.{Future, TypedActor}
 
 class PrimeFilter(val id: Int, val myInitialPrime: Long, numMaxLocalPrimes: Int) extends TypedActor{
 

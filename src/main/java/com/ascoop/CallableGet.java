@@ -1,4 +1,4 @@
-package abs.api.cwi;
+package com.ascoop;
 
 @FunctionalInterface
 public interface CallableGet<T, V> {

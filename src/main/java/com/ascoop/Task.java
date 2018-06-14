@@ -1,4 +1,4 @@
-package abs.api.cwi;
+package com.ascoop;
 
 import java.io.Serializable;
 import java.util.concurrent.Callable;

@@ -1,4 +1,4 @@
-package abs.api.cwi
+package com.ascoop
 
 import java.lang
 import java.util.concurrent.Callable
@@ -7,7 +7,7 @@ import java.util.function.Supplier
 
 object TypedActor {
   // using a value class for less runtime overhead
-  class GuardHelper private[TypedActor] (val g: Guard) extends AnyVal {
+  class GuardHelper private[TypedActor](val g: Guard) extends AnyVal {
     def execute[V](continuation: => Future[V])(implicit hostActor: LocalActor): Future[V] = {
       hostActor.spawn(g, () => continuation)
     }

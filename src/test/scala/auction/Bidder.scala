@@ -1,9 +1,9 @@
 package auction
 
-import abs.api.cwi.Future.done
-import abs.api.cwi.TypedActor
+import com.ascoop.Future.done
 import auction.DataTypes._
 import auction.Functions._
+import com.ascoop.TypedActor
 
 class Bidder[T](arrival: Double, deadline: Double, destination: Option[Destination], budget: Price, risk: Double, info: T)
     extends TypedActor {

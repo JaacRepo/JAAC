@@ -1,5 +1,5 @@
 
-package abs.api.cwi;
+package com.ascoop;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;

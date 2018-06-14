@@ -1,4 +1,4 @@
-package abs.api.cwi;
+package com.ascoop;
 
 import java.util.function.Supplier;
 

@@ -1,8 +1,8 @@
 package NQueens.nqueensconf
 
 import NQueens.common.FastFunctions
-import abs.api.cwi.Future.done
-import abs.api.cwi._
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
 
 
 class Worker(var master: IMaster, var threshold: Int, var size: Int) extends TypedActor with IWorker {

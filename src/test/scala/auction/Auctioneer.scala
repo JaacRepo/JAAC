@@ -1,8 +1,9 @@
 package auction
 
-import abs.api.cwi.Future.done
-import abs.api.cwi.{Future, TypedActor}
+import com.ascoop.Future.done
+import com.ascoop.Future
 import auction.DataTypes._
+import com.ascoop.{Future, TypedActor}
 
 import scala.collection.immutable.SortedSet
 
@@ -11,7 +12,7 @@ import scala.collection.immutable.SortedSet
 // NOTE: each bidding agent has to have a comparable unique identifier for reproducibility.
 class Auctioneer[BidderType](itemValues: BeliefBase, init_goal: Route, bidders: List[Bidder[BidderType]], numWinners: Int)
     extends TypedActor {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   private case class BidNode(bidder: Bidder[BidderType], price: Price)
   implicit private val ordering: Ordering[BidNode] = Ordering.by(node => (node.price, node.bidder.hashCode())) // ordering of bidders is not important, but to make sure they are different

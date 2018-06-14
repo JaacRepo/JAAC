@@ -1,7 +1,7 @@
 package auction
 
-import abs.api.cwi._
 import auction.DataTypes.{Container, Train}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 class DSOL extends TypedActor {
 
@@ -17,7 +17,7 @@ class DSOL extends TypedActor {
 }
 
 object DsolMain extends TypedActor {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   def main(args: Array[String]): Unit = {
     val nTrains = 10

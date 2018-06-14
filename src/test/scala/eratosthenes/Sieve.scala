@@ -1,7 +1,7 @@
 package eratosthenes
 
-import abs.api.cwi.Future.done
-import abs.api.cwi._
+import com.ascoop.Future.done
+import com.ascoop.{Future, TypedActor}
 
 class Sieve(prime: Long, numMax: Int) extends TypedActor {
 
@@ -51,7 +51,7 @@ class Sieve(prime: Long, numMax: Int) extends TypedActor {
 }
 
 object SieveMain extends TypedActor {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
   protected var N: Long = 1000000
   protected var M: Int = 2000

@@ -1,21 +1,22 @@
 package fibbonachi
 
-import abs.api.cwi.{Future, ActorSystem, TypedActor}
+import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
-/*object FibMain {
+object FibMain {
   def main(args: Array[String]): Unit = {
-    val N : Int  = 31
+    val N : Int  = 25
     val fjRunner = new FibActor(null, System.currentTimeMillis);
     val f = fjRunner.request(N)
   }
-}*/
+}
 
 
 object FibMain2 extends TypedActor {
-  import TypedActor._
+  import com.ascoop.TypedActor._
 
-  var N = 31
-  var rep = 7
+  var N = 25
+  var rep = 3
 
   def main(args: Array[String]): Unit = {
     doFib
@@ -32,8 +33,8 @@ object FibMain2 extends TypedActor {
         doFib
       } else {
         N=N+1;
-        rep = 7;
-        if(N==32) {
+        rep = 3;
+        if(N>31) {
           ActorSystem.shutdown()
         }else
           doFib

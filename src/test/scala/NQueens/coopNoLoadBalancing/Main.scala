@@ -1,6 +1,6 @@
 package NQueens.coopNoLoadBalancing
 
-import abs.api.cwi._
+import com.ascoop.LocalActor
 
 
 object MainCoop extends LocalActor {

@@ -1,11 +1,11 @@
-package abs.api.cwi;
+package com.ascoop;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static abs.api.cwi.Task.emptyTask;
+import static com.ascoop.Task.emptyTask;
 
 /**
  * A Future can be seen as a reference to an asynchronous computation, that may or may not result in a value returned.

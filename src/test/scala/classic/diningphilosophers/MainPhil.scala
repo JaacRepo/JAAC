@@ -1,6 +1,7 @@
 package classic.diningphilosophers
 
-import abs.api.cwi.{ActorSystem, TypedActor}
+import com.ascoop.TypedActor
+import com.ascoop.{ActorSystem, TypedActor}
 
 object MainPhil extends TypedActor {
   def main(args: Array[String]): Unit = {

@@ -2,7 +2,7 @@ package NQueens.nqueensconf
 
 import java.util.Objects
 
-import abs.api.cwi._
+import com.ascoop.{Future, TypedActor}
 
 
 class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,var threshold : Int,var size : Int) extends TypedActor with IMaster {

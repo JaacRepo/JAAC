@@ -1,8 +1,8 @@
 package auction
 
-import abs.api.cwi.Future.done
-import abs.api.cwi.TypedActor
+import com.ascoop.Future.done
 import auction.DataTypes.{Container, Route, Train}
+import com.ascoop.TypedActor
 
 class AuctionOrganizer(trains: List[Train], containers: List[Container]) extends TypedActor {
   import auction.AuctionOrganizer.Result

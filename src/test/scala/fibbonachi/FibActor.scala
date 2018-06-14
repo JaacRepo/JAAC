@@ -1,12 +1,13 @@
 package fibbonachi
 
-import abs.api.cwi.{Future, ActorSystem, TypedActor}
+import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 class FibActor(parent: FibActor) extends TypedActor{
   private var result = 0
   private var respReceived = 0
   private var t1 = 0L
-  private var iter = 15
+  private var iter = 27
   private var N : Int = 0
 
 
@@ -53,7 +54,10 @@ class FibActor(parent: FibActor) extends TypedActor{
       respReceived=0
       iter= iter-1
       if(iter>0) {
-        this.request(this.N)
+        if(iter%4==0)
+        this.request(this.N+1)
+        else
+          this.request(this.N)
       }
       else
         ActorSystem.shutdown()
