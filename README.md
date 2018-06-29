@@ -1,5 +1,3 @@
-# ASCOOP
-Actors in Scala with Cooperative Scheduling. This link is provided for Scala 2018 submission 9.
-The library is written with Intellij IDE and can be imported as a .sbt project.
+#JAAC
 
-The tests are available in the folder src/test/scala.
+Java implementation of Actors with coroutines. Extended to Scala (ASCOOP) for typechecking method calls.
