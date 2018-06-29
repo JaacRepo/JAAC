@@ -53,9 +53,7 @@ class PingActor(pongActor: PongActor) extends PingInterface {
   override def pong: Future[Void] = messageHandler {
     if (pingsLeft > 0)
       this.ping
-
     //For benchmarking this simple example it is better to use the block of code below to run several iterations, and obtain faster results
-
     done
   }
 }

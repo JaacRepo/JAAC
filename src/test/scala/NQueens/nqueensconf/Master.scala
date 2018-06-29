@@ -2,7 +2,7 @@ package NQueens.nqueensconf
 
 import java.util.Objects
 
-import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 
 class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,var threshold : Int,var size : Int) extends TypedActor with IMaster {
@@ -26,8 +26,11 @@ class Master(var numWorkers : Int,var priorities : Int,var solutionsLimit : Int,
         result= List()
         resultCounter = 0
         t1 = System.currentTimeMillis()
+
+        //delete these 2 lines to run only once
         this.sendWork(inArray, 0, priorities)
         Future.done()
+        //ActorSystem.shutdown() uncomment this for termination after setting a fixed number of iterations or after one run.
       }
     else
         Future.done()

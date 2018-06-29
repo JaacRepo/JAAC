@@ -41,15 +41,8 @@ public abstract class LocalActor implements Actor {
 		@Override
 		public void compute() {
 			if (takeOrDie()) {
-			/* 	if (runningTask.isBlocking()) {
-					BlockingExecutionContext.submit(() -> {
-						runningTask.run();
-						ActorSystem.submit(this);
-					});
-				} else  {*/
 					runningTask.run();
 					ActorSystem.submit(new MainTask());  // instead of a loop we submit again, thus allowing other actors' tasks to get a fair chance of being scheduled in the meantime
-//				}
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 package eratosthenes
 
 import com.ascoop.Future.done
-import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 class Sieve(prime: Long, numMax: Int) extends TypedActor {
 
@@ -53,8 +53,8 @@ class Sieve(prime: Long, numMax: Int) extends TypedActor {
 object SieveMain extends TypedActor {
   import com.ascoop.TypedActor._
 
-  protected var N: Long = 1000000
-  protected var M: Int = 2000
+  protected var N: Long = 10000
+  protected var M: Int = 200
 
   def main(args: Array[String]): Unit = {
     doSieve
@@ -75,8 +75,8 @@ object SieveMain extends TypedActor {
       val res = three.exit(1);
       res.onSuccess { result: Void =>
         println(System.currentTimeMillis()-t1)
-        N+=1000000
-        if (N <= 10000000)
+        N+=10000
+        if (N <= 100000)
           doSieve
         done()
       }

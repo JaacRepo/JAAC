@@ -1,6 +1,6 @@
 package NQueens.coopNoLoadBalancing
 
-import com.ascoop.{Future, TypedActor}
+import com.ascoop.{ActorSystem, Future, TypedActor}
 
 
 class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, var threshold: Int, var size: Int) extends TypedActor with IMaster {
@@ -23,9 +23,10 @@ class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, 
       println("-------------------------------- Program successfully completed! in " + (System.currentTimeMillis() - t1))
       t1=System.currentTimeMillis()
 
-      //delete this to run only once
+      //delete this to run only once and uncomment the next line to properly terminate
       this.init
-      //
+
+      //ActorSystem.shutdown()
 
       Future.done()
     })

@@ -8,16 +8,16 @@ trait PongInterface extends TypedActor {
   def ping(sender: PingActor): Future[Void]
 }
 
-class PongActor extends PongInterface {
+class PongActor extends TypedActor {
   var pongCount = 0
 
-  override def ping(sender: PingActor): Future[Void] = messageHandler {
+   def ping(sender: PingActor): Future[Void] = messageHandler {
     sender.pong
     pongCount += 1
     done
   }
 
-  override def stop: Future[Void] = messageHandler {
+   def stop: Future[Void] = messageHandler {
     println("Pong: pongs = " + pongCount)
     //ActorSystem.shutdown()
     done

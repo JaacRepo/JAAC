@@ -1,4 +1,4 @@
-name := "abs-api-cwi"
+name := "com.ascoop"
 
 version := "0.1"
 
