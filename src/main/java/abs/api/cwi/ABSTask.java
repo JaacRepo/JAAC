@@ -4,27 +4,26 @@ import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 public class ABSTask<V> implements Serializable, Runnable {
-	static Callable<ABSFuture<Object>> emptyTask = () -> ABSFuture.done(null);
+	public static Callable<ABSFuture<Object>> emptyTask = () -> ABSFuture.done(null);
 
-	public int priority;
 	protected Guard enablingCondition = null;
 	protected final ABSFuture<V> resultFuture;
 	protected Callable<ABSFuture<V>> task;
 
-	ABSTask(Callable<ABSFuture<V>> message, int p) {
+	ABSTask(Callable<ABSFuture<V>> message) {
 		this(message, new Guard() {
-			@Override boolean evaluate() { return true; }
-			@Override boolean hasFuture() { return false;}
-			@Override void addFuture(Actor a) { }
-			@Override ABSFuture<?> getFuture() { return null;}
+			@Override
+			protected boolean evaluate() { return true; }
+			@Override protected boolean hasFuture() { return false;}
+			@Override protected void addFuture(Actor a) { }
+			@Override  protected ABSFuture<?> getFuture() { return null;}
 
-		},p);
+		});
 	}
 
-	ABSTask(Callable<ABSFuture<V>> message, Guard enablingCondition, int p) {
+	ABSTask(Callable<ABSFuture<V>> message, Guard enablingCondition) {
 		if (message == null)
 			throw new NullPointerException();
-		priority=p;
 		this.task = message;
 		resultFuture = new ABSFuture<>();
 		this.enablingCondition = enablingCondition;
@@ -46,5 +45,10 @@ public class ABSTask<V> implements Serializable, Runnable {
 
 	public ABSFuture<V> getResultFuture() {
 		return resultFuture;
+	}
+
+	@Override
+	public String toString() {
+		return enablingCondition+" "+evaluateGuard()+ " "+task;
 	}
 }

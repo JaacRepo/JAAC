@@ -1,5 +1,7 @@
 package abs.api.cwi;
 
+import abs.api.realtime.TimedActorSystem;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,21 +32,28 @@ class AbsKey implements Comparable<AbsKey> {
         } else
             return o.priority - this.priority;
     }
+
+    @Override
+    public String toString() {
+        return strict+ " " +priority;
+    }
 }
 
 public abstract class LocalActor implements Actor {
     private ABSTask<?> runningTask;
-    private final AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
+    private AtomicBoolean mainTaskIsRunning = new AtomicBoolean(false);
     private ConcurrentSkipListMap<AbsKey, ConcurrentLinkedQueue<ABSTask<?>>> taskQueue = new ConcurrentSkipListMap<>();
+    public ABSFuture<Void> constructorFuture= new ABSFuture<>();
+    private Actor dc = null;
 
-    private ConcurrentHashMap<ABSFuture<?>, ConcurrentLinkedQueue<ABSTask<?>>> disabledQueue = new ConcurrentHashMap<>();
+    //private ConcurrentHashMap<ABSFuture<?>, ConcurrentLinkedQueue<ABSTask<?>>> disabledQueue = new ConcurrentHashMap<>();
 
     private class MainTask implements Runnable {
         @Override
         public void run() {
             if (takeOrDie()) {
                 runningTask.run();
-                ActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
+                TimedActorSystem.submit(this);  // instead of a loop we submit again, thus allowing other actors' tasks to get a chance of being scheduled in the meantime
             }
         }
     }
@@ -52,6 +61,7 @@ public abstract class LocalActor implements Actor {
     private boolean takeOrDie() {
         synchronized (mainTaskIsRunning) {
             // this synchronized block is to remove the race condition between checking if nothing is there to be executed and resetting the flag mainTaskIsRunning
+            //System.out.println(this+" "+taskQueue);
             for (AbsKey key : taskQueue.keySet()) {
                 ConcurrentLinkedQueue<ABSTask<?>> bucket = taskQueue.get(key);
                 for (ABSTask<?> absTask : bucket) {
@@ -63,11 +73,17 @@ public abstract class LocalActor implements Actor {
                 }
                 if (!bucket.isEmpty() && key.isStrict()) {
                     // when there are disabled tasks in strict bucket, we cannot execute a lower priority task
+              //      System.out.println(this+ " has completed");
                     mainTaskIsRunning.set(false);
+                    //RT: Notify system that this actor cannot run anymore tasks.
+                    TimedActorSystem.done();
                     return false;
                 }
             }
+            //System.out.println(this+ " has completed");
             mainTaskIsRunning.set(false);
+            //RT: Notify system that this actor cannot run anymore tasks.
+            TimedActorSystem.done();
             return false;
         }
     }
@@ -93,7 +109,7 @@ public abstract class LocalActor implements Actor {
         }
     }
 
-    private <V> void scheduleDisabled(ABSFuture<?> disabledF, ABSTask<V> m) {
+    /*private <V> void scheduleDisabled(ABSFuture<?> disabledF, ABSTask<V> m) {
         if (disabledQueue.containsKey(disabledF))
             disabledQueue.get(disabledF).add(m);
         else {
@@ -101,13 +117,13 @@ public abstract class LocalActor implements Actor {
             bucket.add(m);
             disabledQueue.put(disabledF, bucket);
         }
-    }
+    }*/
 
-    public final ABSFuture<Void> enable(ABSFuture<?> complete) {
+    /*public final ABSFuture<Void> enable(ABSFuture<?> complete) {
         if (disabledQueue.containsKey(complete)) {
             for (ABSTask<?> task :
                     disabledQueue.get(complete)) {
-                schedule(task, task.p, NON_STRICT);
+                schedule(task, task.priority, NON_STRICT);
             }
             disabledQueue.remove(complete);
         } else {
@@ -115,33 +131,34 @@ public abstract class LocalActor implements Actor {
             if (disabledQueue.contains(key))
                 for (ABSTask<?> task :
                         disabledQueue.get(key)) {
-                    schedule(task, task.p, NON_STRICT);
+                    schedule(task, task.priority, NON_STRICT);
                 }
             disabledQueue.remove(key);
         }
         return ABSFuture.done();
-    }
+    }*/
 
     @Override
     public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
-        ABSTask<V> m = new ABSTask<>(message, LOW);
+        ABSTask<V> m = new ABSTask<>(message);
         schedule(m, LOW, NON_STRICT);
         if (notRunningThenStart()) {
-            ActorSystem.submit(new MainTask());
+            TimedActorSystem.start();
+            //System.out.println(this+ " has started");
+
+            TimedActorSystem.submit(new MainTask());
         }
         return m.getResultFuture();
     }
 
     @Override
-    public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message) {
-        ABSTask<V> m = new ABSTask<>(message, guard, LOW);
+    public final <V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message)  {
+        ABSTask<V> m = new ABSTask<>(message, guard);
         guard.addFuture(this);
-        if (guard.hasFuture() && !guard.evaluate()) {
-            scheduleDisabled(guard.getFuture(), m);
-        } else
-            schedule(m, LOW, NON_STRICT);
+        schedule(m, LOW, NON_STRICT);
         return m.getResultFuture();
     }
+
 
     // Just make the super implementation final
     @Override
@@ -153,13 +170,38 @@ public abstract class LocalActor implements Actor {
 	@Override
 	public final <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict) {
         Guard guard = Guard.convert(f);
-        ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard, priority);
+        ABSTask<T> m = new ABSTask<>(() -> message.run(f.getOrNull()), guard);
         guard.addFuture(this);
-        if (strict || f.isDone())
-            schedule(m, priority, strict);
-        else
-            scheduleDisabled(f, m);
+        schedule(m, priority, strict);
         return m.getResultFuture();
+
     }
 
+    protected void moveToCOG(LocalActor dest) {
+        if(dest!=null) {
+            this.mainTaskIsRunning = dest.mainTaskIsRunning;
+            this.taskQueue = dest.taskQueue;
+        }
+    }
+
+    @Override
+    public boolean sameCog(LocalActor dest) {
+        if(dest!=null ) {
+            return this.mainTaskIsRunning == dest.mainTaskIsRunning && this.taskQueue == dest.taskQueue;
+        }
+        return false;
+    }
+
+    @Override
+    public ABSFuture<Void> getConstructorFuture() {
+        return constructorFuture;
+    }
+
+    public Actor getDc() {
+        return dc;
+    }
+
+    public void setDc(Actor dc) {
+        this.dc = dc;
+    }
 }

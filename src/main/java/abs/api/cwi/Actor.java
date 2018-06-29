@@ -12,6 +12,8 @@ public interface Actor {
 	<V> ABSFuture<V> spawn(Guard guard, Callable<ABSFuture<V>> message);
 	<T,V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message, int priority, boolean strict);
 
+	boolean sameCog(LocalActor that);
+
 	default <T, V> ABSFuture<T> getSpawn(ABSFuture<V> f, CallableGet<T, V> message) {
 		return getSpawn(f, message, LOW, NON_STRICT);
 	}
@@ -20,5 +22,6 @@ public interface Actor {
 		return 0;
 	}
 
-    ABSFuture<Void> enable(ABSFuture<?> vabsFuture);
+
+	ABSFuture<Void> getConstructorFuture();
 }

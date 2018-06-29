@@ -10,23 +10,23 @@ public class ConjunctionGuard extends Guard {
 	}
 
 	@Override
-	boolean evaluate() {
+	protected boolean evaluate() {
 		return left.evaluate() && right.evaluate();
 	}
 
 	@Override
-	void addFuture(Actor a) {
+	protected void addFuture(Actor a) {
 		left.addFuture(a);
 		right.addFuture(a);
 	}
 
 	@Override
-	ABSFuture<?> getFuture() {
+	protected ABSFuture<?> getFuture() {
 		return null;
 	}
 
 	@Override
-	boolean hasFuture() {
+	protected boolean hasFuture() {
 		return left.hasFuture() || right.hasFuture();
 	}
 

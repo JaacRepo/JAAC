@@ -10,22 +10,22 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-	boolean evaluate() {
+    protected boolean evaluate() {
 		return future.isDone();
 	}
 
 	@Override
-	void addFuture(Actor a) {
+	protected void addFuture(Actor a) {
 		future.awaiting(a);
 	}
 
 	@Override
-	ABSFuture<?	> getFuture() {
+	protected ABSFuture<?	> getFuture() {
 		return future;
 	}
 
 	@Override
-	boolean hasFuture() {
+	protected boolean hasFuture() {
 		return true;
 	}
 

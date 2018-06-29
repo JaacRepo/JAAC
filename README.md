@@ -1,2 +1,2 @@
 # JAAC
-Java implementation of Actors with Coroutines
+Java implementation of Actors with Coroutines. Extended to Scala with typechecking.

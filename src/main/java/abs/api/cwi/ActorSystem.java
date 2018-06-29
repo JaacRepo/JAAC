@@ -9,9 +9,9 @@ import java.util.concurrent.Executors;
 
 public class ActorSystem {
 	/** The main executor. */
-	private static ExecutorService mainExecutor = Executors.newFixedThreadPool(10);
+	protected static ExecutorService mainExecutor = Executors.newFixedThreadPool(10);
 
-	private ActorSystem() { }
+	protected ActorSystem() { }
 
 	static void submit(Runnable task) {
 		mainExecutor.submit(task);

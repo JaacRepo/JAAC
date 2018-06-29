@@ -12,21 +12,24 @@ public class PureExpressionGuard extends Guard {
 	}
 
 	@Override
-	boolean evaluate() {
+    protected boolean evaluate() {
 		return expression.get();
 	}
 
 	@Override
-	void addFuture(Actor a) { }
+	protected boolean hasFuture() {
+		return false;
+	}
 
 	@Override
-	ABSFuture<?> getFuture() {
+	protected void addFuture(Actor a) {
+
+	}
+
+	@Override
+	protected ABSFuture<?> getFuture() {
 		return null;
 	}
 
-	@Override
-	boolean hasFuture() {
-		return false;
-	}
 
 }

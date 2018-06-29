@@ -120,7 +120,10 @@ object ABSFutureSugar {
       override def spawn[V](guard: Guard, message: Callable[ABSFuture[V]]) = ???
       override def getSpawn[T, V](f: ABSFuture[V], message: CallableGet[T, V], priority: Int, strict: Boolean) = ???
 
-      override def enable(vabsFuture: ABSFuture[_]) = ???
+
+      override def sameCog(that: LocalActor) = ???
+
+      override def getConstructorFuture = ???
     }
   }
 }
