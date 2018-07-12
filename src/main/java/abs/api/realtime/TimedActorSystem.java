@@ -50,7 +50,7 @@ public class  TimedActorSystem extends ActorSystem {
 
             for (ClassDeploymentComponent dc:
                  deploymentComponents) {
-                dc.replenish();
+                //dc.replenish();
             }
 
             for (Actor a :
