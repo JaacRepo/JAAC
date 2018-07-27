@@ -10,7 +10,7 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-    protected boolean evaluate() {
+	protected boolean evaluate() {
 		return future.isDone();
 	}
 
@@ -20,7 +20,7 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-	protected ABSFuture<?	> getFuture() {
+	protected ABSFuture<?> getFuture() {
 		return future;
 	}
 

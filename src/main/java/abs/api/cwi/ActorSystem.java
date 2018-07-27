@@ -1,23 +1,28 @@
-/*
- * The class that will be extended by ABS classes
- * 
- */
+
 package abs.api.cwi;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.RecursiveAction;
 
 public class ActorSystem {
 	/** The main executor. */
-	protected static ExecutorService mainExecutor = Executors.newFixedThreadPool(10);
+	protected static ForkJoinPool mainExecutor = new ForkJoinPool(10, NonDaemonForkJoinWorkerThread::new, null, false);
 
 	protected ActorSystem() { }
 
-	static void submit(Runnable task) {
-		mainExecutor.submit(task);
+	public static void submit(RecursiveAction task) {
+		mainExecutor.execute(task);
 	}
 
 	public static void shutdown() {
 		mainExecutor.shutdown();
 	}
+
+	private static class NonDaemonForkJoinWorkerThread extends ForkJoinWorkerThread {
+        NonDaemonForkJoinWorkerThread(ForkJoinPool pool) {
+            super(pool);
+            this.setDaemon(false);
+        }
+    }
 }

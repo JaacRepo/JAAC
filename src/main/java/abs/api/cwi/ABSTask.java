@@ -14,10 +14,12 @@ public class ABSTask<V> implements Serializable, Runnable {
 		this(message, new Guard() {
 			@Override
 			protected boolean evaluate() { return true; }
-			@Override protected boolean hasFuture() { return false;}
-			@Override protected void addFuture(Actor a) { }
-			@Override  protected ABSFuture<?> getFuture() { return null;}
-
+			@Override
+			protected boolean hasFuture() { return false;}
+			@Override
+			protected void addFuture(Actor a) { }
+			@Override
+			protected ABSFuture<?> getFuture() { return null; }
 		});
 	}
 
@@ -36,7 +38,7 @@ public class ABSTask<V> implements Serializable, Runnable {
 	@Override
 	public void run() {
 		try {
-			resultFuture.forward(task.call()); // upon completion, the result is not necessarily ready
+			task.call().backLink(resultFuture);  // upon completion, the result is not necessarily ready
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -45,10 +47,5 @@ public class ABSTask<V> implements Serializable, Runnable {
 
 	public ABSFuture<V> getResultFuture() {
 		return resultFuture;
-	}
-
-	@Override
-	public String toString() {
-		return enablingCondition+" "+evaluateGuard()+ " "+task;
 	}
 }

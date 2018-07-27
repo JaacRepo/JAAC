@@ -1,7 +1,6 @@
 package abs.api.realtime;
 
 import ABS.DC.ClassDeploymentComponent;
-import ABS.DC.DeploymentComponent;
 import abs.api.cwi.ABSTask;
 import abs.api.cwi.Actor;
 import abs.api.cwi.ActorSystem;
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class  TimedActorSystem extends ActorSystem {
+public class TimedActorSystem extends ActorSystem {
 
     private static AtomicInteger symbolicTime = new AtomicInteger(0);
 
@@ -79,9 +78,6 @@ public class  TimedActorSystem extends ActorSystem {
         symbolicTime.addAndGet(x);
     }
 
-    static public void submit(Runnable task) {
-        mainExecutor.submit(task);
-    }
 
     static public void start(){
         runningActors.incrementAndGet();

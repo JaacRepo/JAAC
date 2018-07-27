@@ -2,12 +2,13 @@ package abs.api.cwi;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static abs.api.cwi.ABSTask.emptyTask;
 
 /**
- * A Future can be seen as a reference to an asynchronous computation, that may or may not result in a value returned.
+ * A ABSFuture can be seen as a reference to an asynchronous computation, that may or may not result in a value returned.
  * As such, a piece of computation may delegate its completion to another async computation; this feature is implemented
  * in the {@code forward} method.
  * Thus, the main action on a future is to check the execution and completion of the asynchronous computation.
@@ -22,8 +23,8 @@ import static abs.api.cwi.ABSTask.emptyTask;
  */
 public class ABSFuture<V> {
     private V value = null;
-    private ABSFuture<V> target = null;
-    private boolean completed = false;
+    private ABSFuture<V> dependant = null;
+    private AtomicBoolean completed = new AtomicBoolean(false);
     private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
 
     ABSFuture() {}  // not accessible to arbitrary classes
@@ -51,67 +52,53 @@ public class ABSFuture<V> {
 
     /**
      * This method registers an actor such that it will be notified when this future is complete.
+     * By first adding as awaiting and then checking my completeness, we ensure that we do not miss
+     * notification, even though we may notify twice in rare cases.
      */
     void awaiting(Actor actor){
-        this.awaiting(Collections.singleton(actor));
-    }
-
-    private void awaiting(Collection<Actor> actors){
-        if (target == null) {
-            awaitingActors.addAll(actors);  // this is probably not atomic. Is this OK?
-            if (completed) {
-                notifyDependant();
-            }
-        }
-        // in the meantime another thread may set the target, so below code is not "else"
-        if (target != null) {
-            target.awaiting(actors);
-            if (target.isDone()) {
-                notifyDependant();
-            }
-        }
+        awaitingActors.add(actor);
+        if (completed.get())
+            notifyDependant(actor);
     }
 
     /**
-     * Upon calling this method, the completion of this future will be delegated to the target future.
-     * It means that afterwards, this future's complete method shall never be called anymore. Instead,
-     * it propagates its list of waiting actors to target, who will directly notify them upon completion.
-     * In case target is already completed before this method registers its own awaiting actors, it will
-     * notify them directly.
+     * Links this instance to another future whose completion is delegated to this one.
+     * By first adding as dependant and then checking my completeness, we ensure that we do not miss
+     * completing it, even though we may complete it twice in rare cases.
      */
-    void forward(ABSFuture<V> target) {
-        assert this.target == null;
-        this.target = target;
-        // First register as dependant then check for completion.
-        // This might lead to double notification in some corner cases but doesn't miss any
-        target.awaiting(awaitingActors);
-        if (target.isDone()) {
-            notifyDependant();
-        }
+    void backLink(ABSFuture<V> linkedFuture) {
+        assert dependant == null;
+        dependant = linkedFuture;
+        if (completed.get())
+            dependant.complete(getOrNull());  // getOrNull is overridden in subclasses
     }
 
     void complete(V value) {
-        assert (!this.completed);
-        assert (this.target == null);
+        if (this.completed.get()) return;  // double notification from delegated future
         this.value = value;
-        this.completed = true;
-        notifyDependant();
+        this.completed.set(true);
+        if (dependant != null) {
+            dependant.complete(value);
+        }
+        notifyDependants();
     }
 
-    protected void notifyDependant() {
-        awaitingActors.forEach(localActor -> localActor.send(emptyTask));
+    protected void notifyDependants() {
+        awaitingActors.forEach(this::notifyDependant);
+    }
+
+    private ABSFuture<Object> notifyDependant(Actor localActor) {
+        return localActor.send(emptyTask);
     }
 
     public boolean isDone() {
-        // If in the middle of running this method, a target is added such that I may actually be done, the
-        // following code returns not done, but that shouldn't be a problem because the next round will be fine.
-        // Though, we should make sure that there will a "next round" and that is taken care of in LocalActor takeOrDie method.
-        return (target == null) ? this.completed : target.isDone();
+        return this.completed.get();
     }
 
     V getOrNull() {
-        return (target == null) ? this.value : target.getOrNull();
+        return this.value;
     }
+
     public V getCompleted() {return getOrNull();}
 }
 
@@ -123,15 +110,15 @@ class CompletedABSFuture<T> extends ABSFuture<T> {
 
 /**
  * A sequenced future behaves like an actor in the sense that it should be notified by the futures it is awaiting.
- *
- * @param <R>
+ * This implements the Actor interface to be able to receive the wake-up message but it does not mean that
+ * it is thread-safe by itself. Therefore we use an atomic boolean for completed field to ensure safety.
  */
 class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
     private final Collection<ABSFuture<R>> futures;
-    private boolean completed = false;
+    private AtomicBoolean completed = new AtomicBoolean(false);
 
-    SequencedABSFuture(Collection<ABSFuture<R>> futures) {
-        this.futures = futures;
+    SequencedABSFuture(Collection<ABSFuture<R>> ABSFutures) {
+        this.futures = ABSFutures;
     }
 
     @Override
@@ -143,13 +130,13 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
 
     @Override
     public boolean isDone() {
-        return completed;
+        return completed.get();
     }
 
     @Override
     public List<R> getOrNull() {
         // no need to calculate `completed` because it is always done before calling this method
-        if (completed) {
+        if (completed.get()) {
             return futures.stream().map(ABSFuture::getOrNull).collect(Collectors.toList());
         }
         else
@@ -158,21 +145,15 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
 
     @Override
     public <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
-        if (!completed)
-            completed = futures.stream().allMatch(ABSFuture::isDone);
-        if (completed)
-            notifyDependant();
+        completed.compareAndSet(false, futures.stream().allMatch(ABSFuture::isDone));
+        if (completed.get())
+            notifyDependants();
         return null;
     }
 
     @Override
     void complete(List<R> value) {
         throw new UnsupportedOperationException("Cannot complete a sequenced future.");
-    }
-
-    @Override
-    void forward(ABSFuture<List<R>> dummy) {
-        throw new UnsupportedOperationException("Cannot forward a sequenced future.");
     }
 
     @Override
@@ -186,13 +167,12 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
     }
 
     @Override
-    public boolean sameCog(LocalActor that) {
-        return true;
-    }
-
-
-    @Override
     public ABSFuture<Void> getConstructorFuture() {
         return null;
+    }
+
+    @Override
+    public boolean sameCog(LocalActor that) {
+        return false;
     }
 }
