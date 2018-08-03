@@ -68,6 +68,12 @@ object Functions {
     readLine();
   }
 
+  def  toString[A](actor :A):String ={
+    if(actor==null)
+      "null"
+    else
+      actor.toString()
+  }
 
   //TODO: println, print
 

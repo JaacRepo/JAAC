@@ -1,6 +1,6 @@
 package abs.api.realtime;
 
-import ABS.DC.ClassDeploymentComponent;
+//import ABS.DC.ClassDeploymentComponent;
 import abs.api.cwi.ABSTask;
 import abs.api.cwi.Actor;
 import abs.api.cwi.ActorSystem;
@@ -20,7 +20,7 @@ public class TimedActorSystem extends ActorSystem {
 
     private static ConcurrentSkipListMap<Integer, List<Actor>> awaitingDurations = new ConcurrentSkipListMap<>();
 
-    private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
+    //private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
 
     private TimedActorSystem() {
     }
@@ -47,10 +47,10 @@ public class TimedActorSystem extends ActorSystem {
 
             advanceTime(advance);
 
-            for (ClassDeploymentComponent dc:
-                 deploymentComponents) {
-                //dc.replenish();
-            }
+//            for (ClassDeploymentComponent dc:
+//                 deploymentComponents) {
+//                //dc.replenish();
+//            }
 
             for (Actor a :
                     toRealease) {
@@ -83,8 +83,8 @@ public class TimedActorSystem extends ActorSystem {
         runningActors.incrementAndGet();
     }
 
-    static void addDC(ClassDeploymentComponent dc){
-        deploymentComponents.add(dc);
-    }
+//    static void addDC(ClassDeploymentComponent dc){
+//        deploymentComponents.add(dc);
+//    }
 
 }
