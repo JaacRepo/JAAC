@@ -12,6 +12,7 @@ public class DurationGuard extends Guard {
         this.whenCalled = TimedActorSystem.now();
         this.min = min;
         this.max = max;
+        //System.out.println("DG: "+min+" "+max+ " "+whenCalled);
     }
 
     @Override

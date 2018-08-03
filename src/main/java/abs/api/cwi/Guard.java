@@ -32,12 +32,7 @@ public abstract class Guard {
 		} else if (o instanceof ABSFuture) {
 			return convert((ABSFuture) o);
 		} else if (o instanceof int[]) {
-			int[] x = (int[]) o;
-			return convert(x);
-		} else if (o instanceof double[]) {
-			double[] x = (double[]) o;
-			int [] a =  new int[]{((int) x[0]), (int)x[1]};
-			return convert(a);
+			return convert((int[])o);
 		} else if (o instanceof Guard) {
 			return (Guard) o;
 		} else {
