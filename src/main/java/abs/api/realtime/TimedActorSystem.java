@@ -34,7 +34,7 @@ public class TimedActorSystem extends ActorSystem {
         if (runningActors.decrementAndGet() == 0) {
             //get the smallest value to advance time
             SortedSet<Integer> keys = awaitingDurations.keySet();
-            System.out.println(keys);
+            //System.out.println(keys);
             int advance = keys.first();
             List<Actor> toRealease = awaitingDurations.remove(advance);
             keys.remove(advance);

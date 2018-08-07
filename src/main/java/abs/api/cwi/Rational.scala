@@ -2,17 +2,17 @@ package abs.api.cwi
 
 import java.util.Objects
 
-class Rational(n: Int, d: Int) extends Ordered[Rational] {
+class Rational(n: BigInt, d: BigInt) extends Ordered[Rational] {
   require( d != 0 )
 
   private val g = Rational.gcd(n.abs, d.abs)
-  val numer: Int = n/g * d.signum
-  val denom: Int = d.abs/g
+  val numer: BigInt = n/g * d.signum
+  val denom: BigInt = d.abs/g
 
   def this(n: Int) = this(n, 1)
   def this(rational: Rational)= this(rational.numer,rational.denom);
 
-  override def toString = numer + (if (denom == 1) "" else ("/"+denom))
+  override def toString ="" + numer + (if (denom == 1) "" else ("/"+denom))
 
   def getNumer() = numer
   def getDenom() = denom
@@ -27,7 +27,7 @@ class Rational(n: Int, d: Int) extends Ordered[Rational] {
   def abs = new Rational( numer.abs, denom )
   def signum = new Rational( numer.signum )
   def toFloat = (numer.toFloat/denom.toFloat)
-  def toInt = (numer/denom)
+  def toInt = (numer/denom).toInt
   def *(that: Rational): Rational = new Rational( this.numer * that.numer, this.denom * that.denom )
   def *(that: Int): Rational = new Rational( this.numer * that, this.denom )
 
@@ -36,8 +36,8 @@ class Rational(n: Int, d: Int) extends Ordered[Rational] {
 
   def inverse = new Rational( denom, numer )
 
-  def compare(that: Rational) = this.numer * that.denom - that.numer * this.denom
-  def compare(that: Int) = this.numer - that * this.denom
+//  def compare(that: Rational) = this.numer * that.denom - that.numer * this.denom
+//  def compare(that: Int) = this.numer - that * this.denom
 
   def equals(that: Rational) = {
     (this.numer==0 && that.numer==0)|| (this.numer == that.numer && this.denom == that.denom)
@@ -56,11 +56,21 @@ class Rational(n: Int, d: Int) extends Ordered[Rational] {
     }
     return super.equals(obj)
   }
+
+  override def compare(that: Rational): Int = {
+    val c = this.numer*that.denom-that.numer*this.denom
+    if(c.isValidInt)
+      c.toInt
+    else if (c<0)
+      Int.MinValue
+    else
+      Int.MaxValue
+  }
 }
 
 object Rational {
   implicit def intToRational(x: Int) = new Rational(x)
-  private def gcd(a: Int, b: Int) : Int = if (b == 0) a else gcd(b, a % b)
+  private def gcd(a: BigInt, b: BigInt) : BigInt = if (b == 0) a else gcd(b, a % b)
 
   def apply(numer: Int, denom: Int) = new Rational(numer, denom)
   def apply(numer: Int) = new Rational(numer)

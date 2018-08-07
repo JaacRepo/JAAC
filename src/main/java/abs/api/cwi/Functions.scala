@@ -49,11 +49,11 @@ object Functions {
   }
 
   def numerator(a: Rational): Int = {
-    a.numer
+    a.numer.toInt
   }
 
   def denominator(a: Rational): Int = {
-    a.denom
+    a.denom.toInt
   }
 
   def substr( str : String,  start : Int,  length : Int): String= {
