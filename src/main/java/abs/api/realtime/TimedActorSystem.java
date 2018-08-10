@@ -1,6 +1,6 @@
 package abs.api.realtime;
 
-//import ABS.DC.ClassDeploymentComponent;
+import ABS.DC.ClassDeploymentComponent;
 import abs.api.cwi.ABSTask;
 import abs.api.cwi.Actor;
 import abs.api.cwi.ActorSystem;
@@ -20,7 +20,7 @@ public class TimedActorSystem extends ActorSystem {
 
     private static ConcurrentSkipListMap<Integer, List<Actor>> awaitingDurations = new ConcurrentSkipListMap<>();
 
-    //private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
+    private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
 
     private TimedActorSystem() {
     }
@@ -48,19 +48,20 @@ public class TimedActorSystem extends ActorSystem {
 
             advanceTime(advance);
 
-//            for (ClassDeploymentComponent dc:
-//                 deploymentComponents) {
-//                //dc.replenish();
-//            }
-
-            for (Actor a :
-                    toRealease) {
-                a.send(ABSTask.emptyTask);
+            for (ClassDeploymentComponent dc :
+                    deploymentComponents) {
+                    dc.replenish();
             }
-        }
-        //System.out.println("Actor finished still running "+ runningActors.get());
 
-    }
+                for (Actor a :
+                        toRealease) {
+                    a.send(ABSTask.emptyTask);
+                }
+            }
+            //System.out.println("Actor finished still running "+ runningActors.get());
+
+        }
+
 
     static void addDuration(Integer max, Actor a){
                 if(awaitingDurations.containsKey(max)){
@@ -84,8 +85,8 @@ public class TimedActorSystem extends ActorSystem {
         runningActors.incrementAndGet();
     }
 
-//    static void addDC(ClassDeploymentComponent dc){
-//        deploymentComponents.add(dc);
-//    }
+    static void addDC(ClassDeploymentComponent dc){
+        deploymentComponents.add(dc);
+    }
 
 }
