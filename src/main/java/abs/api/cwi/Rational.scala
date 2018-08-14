@@ -12,7 +12,7 @@ class Rational(n: BigInt, d: BigInt) extends Ordered[Rational] {
   def this(n: Int) = this(n, 1)
   def this(rational: Rational)= this(rational.numer,rational.denom);
 
-  override def toString ="" + numer + (if (denom == 1) "" else ("/"+denom))
+  override def toString = ""+ numer + (if (denom == 1) "" else ("/"+denom))
 
   def getNumer() = numer
   def getDenom() = denom
@@ -36,8 +36,10 @@ class Rational(n: BigInt, d: BigInt) extends Ordered[Rational] {
 
   def inverse = new Rational( denom, numer )
 
-//  def compare(that: Rational) = this.numer * that.denom - that.numer * this.denom
-//  def compare(that: Int) = this.numer - that * this.denom
+  //override def compareTo(that: Rational): Int = super.compareTo(that)
+
+  //def compare(that: Rational) = this.numer * that.denom - that.numer * this.denom
+  //def compare(that: Int) = this.numer - that * this.denom
 
   def equals(that: Rational) = {
     (this.numer==0 && that.numer==0)|| (this.numer == that.numer && this.denom == that.denom)
@@ -57,11 +59,11 @@ class Rational(n: BigInt, d: BigInt) extends Ordered[Rational] {
     return super.equals(obj)
   }
 
-  override def compare(that: Rational): Int = {
-    val c = this.numer*that.denom-that.numer*this.denom
+  override def compare(that: Rational) = {
+    val c = this.numer * that.denom - that.numer * this.denom
     if(c.isValidInt)
       c.toInt
-    else if (c<0)
+    else if(c<0)
       Int.MinValue
     else
       Int.MaxValue

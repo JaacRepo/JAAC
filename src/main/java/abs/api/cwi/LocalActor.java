@@ -174,7 +174,7 @@ public abstract class LocalActor implements Actor {
 		return dc;
 	}
 
-	public void setDc(Actor dc) {
+	public void setDC(Actor dc) {
 		this.dc = dc;
 	}
 

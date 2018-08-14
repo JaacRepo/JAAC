@@ -1,5 +1,7 @@
 package abs.api.cwi;
 
+import scala.math.Ordered;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,7 +23,7 @@ import static abs.api.cwi.ABSTask.emptyTask;
  * internal implementation of an actor is simplified such that whenever an actor has no active work to do an is solely
  * awaiting completion of futures, the actor can free its thread and (so to speak) go to sleep.
  */
-public class ABSFuture<V> {
+public class ABSFuture<V> implements Comparable<ABSFuture<V>> {
     private V value = null;
     private ABSFuture<V> dependant = null;
     private AtomicBoolean completed = new AtomicBoolean(false);
@@ -100,6 +102,11 @@ public class ABSFuture<V> {
     }
 
     public V getCompleted() {return getOrNull();}
+
+    @Override
+    public int compareTo(ABSFuture<V> o) {
+        return 0;
+    }
 }
 
 class CompletedABSFuture<T> extends ABSFuture<T> {
@@ -175,4 +182,5 @@ class SequencedABSFuture<R> extends ABSFuture<List<R>> implements Actor {
     public boolean sameCog(LocalActor that) {
         return false;
     }
+
 }
