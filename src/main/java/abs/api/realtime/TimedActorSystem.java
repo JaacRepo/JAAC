@@ -31,10 +31,11 @@ public class TimedActorSystem extends ActorSystem {
     }
 
     static public void done() {
+       // System.out.println("Done");
         if (runningActors.decrementAndGet() == 0) {
             //get the smallest value to advance time
             SortedSet<Integer> keys = awaitingDurations.keySet();
-            System.out.println(keys);
+            //System.out.println("No running actors "+keys);
             int advance = keys.first();
             List<Actor> toRealease = awaitingDurations.remove(advance);
             keys.remove(advance);

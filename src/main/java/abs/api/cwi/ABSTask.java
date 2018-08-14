@@ -48,4 +48,9 @@ public class ABSTask<V> implements Serializable, Runnable {
 	public ABSFuture<V> getResultFuture() {
 		return resultFuture;
 	}
+
+	@Override
+	public String toString() {
+		return "[" + enablingCondition.evaluate() +"] "+ task;
+	}
 }

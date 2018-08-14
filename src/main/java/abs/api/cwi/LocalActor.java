@@ -80,6 +80,8 @@ public abstract class LocalActor implements Actor {
 			}
 			mainTaskIsRunning.set(false);
 			//RT: Notify system that this actor cannot run anymore tasks.
+			//System.out.println(this+" stop on"+taskQueue);
+
 			TimedActorSystem.done();
 			return false;
 		}
@@ -118,9 +120,14 @@ public abstract class LocalActor implements Actor {
 	public final <V> ABSFuture<V> send(Callable<ABSFuture<V>> message) {
 		ABSTask<V> m = new ABSTask<>(message);
 		schedule(m, LOW_PRIORITY, NON_STRICT);
+		/*if(this.toString().contains("OMemory")) {
+			System.out.println(message + " received by OMemory");
+			System.out.println(taskQueue);
+		}*/
+
 		if (notRunningThenStart()) {
+			//System.out.println(this+" start");
 			TimedActorSystem.start();
-			//System.out.println(this+ " has started");
 
 			TimedActorSystem.submit(new MainTask());
 		}
