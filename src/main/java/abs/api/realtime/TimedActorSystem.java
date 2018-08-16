@@ -31,11 +31,16 @@ public class TimedActorSystem extends ActorSystem {
     }
 
     static public void done() {
-       // System.out.println("Done");
+        // System.out.println("Done");
         if (runningActors.decrementAndGet() == 0) {
+            //System.out.println("Replenishing "+ deploymentComponents.size()+" DCs");
+            for (ClassDeploymentComponent dc :
+                    deploymentComponents) {
+                dc.replenish();
+            }
             //get the smallest value to advance time
             SortedSet<Integer> keys = awaitingDurations.keySet();
-            //System.out.println("No running actors "+keys);
+            //System.out.println("No running actors "+awaitingDurations);
             int advance = keys.first();
             List<Actor> toRealease = awaitingDurations.remove(advance);
             keys.remove(advance);
@@ -49,31 +54,30 @@ public class TimedActorSystem extends ActorSystem {
 
             advanceTime(advance);
 
-            for (ClassDeploymentComponent dc :
-                    deploymentComponents) {
-                    dc.replenish();
-            }
+//            System.out.println("Replenishing "+ deploymentComponents.size()+" DCs");
+//            for (ClassDeploymentComponent dc :
+//                    deploymentComponents) {
+//                dc.replenish();
+//            }
 
-                for (Actor a :
-                        toRealease) {
-                    a.send(ABSTask.emptyTask);
-                }
+            for (Actor a :
+                    toRealease) {
+                a.send(ABSTask.emptyTask);
             }
-            //System.out.println("Actor finished still running "+ runningActors.get());
-
         }
+        //System.out.println("Actor finished still running "+ runningActors.get());
+
+    }
 
 
-    static void addDuration(Integer max, Actor a){
-                if(awaitingDurations.containsKey(max)){
-                    awaitingDurations.get(max).add(a);
-                }
-                else{
-                    List<Actor> al = new ArrayList<>();
-                    al.add(a);
-                    awaitingDurations.put(max,al);
-                }
-        //System.out.println(awaitingDurations);
+    static synchronized void addDuration(Integer max, Actor a) {
+        if (awaitingDurations.containsKey(max)) {
+            awaitingDurations.get(max).add(a);
+        } else {
+            List<Actor> al = new ArrayList<>();
+            al.add(a);
+            awaitingDurations.put(max, al);
+        }
         //System.out.println("running "+ runningActors.get());
     }
 
@@ -82,11 +86,11 @@ public class TimedActorSystem extends ActorSystem {
     }
 
 
-    static public void start(){
+    static public void start() {
         runningActors.incrementAndGet();
     }
 
-    static public void addDC(ClassDeploymentComponent dc){
+    static public void addDC(ClassDeploymentComponent dc) {
         deploymentComponents.add(dc);
     }
 
