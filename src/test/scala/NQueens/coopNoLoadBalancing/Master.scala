@@ -1,10 +1,10 @@
 package NQueens.coopNoLoadBalancing
 
-import com.ascoop.{ActorSystem, Future, TypedActor}
+import com.ascoop.FutureFunctions._
+import com.ascoop.{Future, TypedActor}
 
 
 class Master(var numWorkers: Int, var priorities: Int, var solutionsLimit: Int, var threshold: Int, var size: Int) extends TypedActor with IMaster {
-  import com.ascoop.TypedActor._
 
   private var t1 = System.currentTimeMillis()
 

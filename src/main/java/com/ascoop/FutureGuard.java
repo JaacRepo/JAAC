@@ -2,7 +2,7 @@ package com.ascoop;
 
 public class FutureGuard extends Guard {
 
-	public Future<?> future;
+	private Future<?> future;
 
 	public FutureGuard(Future<?> future) {
 		super();

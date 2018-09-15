@@ -1,10 +1,9 @@
 package fibbonachi
 
-import com.ascoop.Future
 import com.ascoop.{Future, TypedActor}
 
 class FibActorAwaiting extends TypedActor{
-  import com.ascoop.TypedActor._
+  import com.ascoop.FutureFunctions._
 
   def request(n: Int): Future[Int] = messageHandler {
     if (n <= 2) {

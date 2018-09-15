@@ -2,7 +2,6 @@ package eratosthenes
 
 import com.ascoop.Future.done
 import com.ascoop.{Future, TypedActor}
-import com.ascoop._
 
 class SimpleSieve(prime: Int) extends TypedActor {
   var next: Option[SimpleSieve] = None
@@ -23,7 +22,7 @@ class SimpleSieve(prime: Int) extends TypedActor {
 }
 
 object SimpleSieveMain extends TypedActor {
-  import com.ascoop.TypedActor._
+  import com.ascoop.FutureFunctions._
 
   def main(args: Array[String]): Unit = {
     var t1 = System.currentTimeMillis()

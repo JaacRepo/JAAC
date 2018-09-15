@@ -1,6 +1,7 @@
 package auction
 
 import auction.DataTypes.{Container, Train}
+import com.ascoop.FutureFunctions._
 import com.ascoop.{ActorSystem, Future, TypedActor}
 
 class DSOL extends TypedActor {
@@ -17,7 +18,6 @@ class DSOL extends TypedActor {
 }
 
 object DsolMain extends TypedActor {
-  import com.ascoop.TypedActor._
 
   def main(args: Array[String]): Unit = {
     val nTrains = 10

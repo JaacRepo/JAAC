@@ -1,7 +1,7 @@
 package classic.diningphilosophers
 
 import com.ascoop.Future.done
-import com.ascoop.{Future, TypedActor}
+import com.ascoop.FutureFunctions._
 import com.ascoop.{ActorFsm, Future, TypedActor}
 
 sealed trait PState
@@ -10,8 +10,6 @@ case class Hungry(left: Boolean = false, right: Boolean = false) extends PState
 case object Eating extends PState
 
 class Philosopher(name: String, left: Fork, right: Fork) extends TypedActor with ActorFsm {
-  import com.ascoop.TypedActor._
-
   override type TState = PState
 
   override def initState = Thinking

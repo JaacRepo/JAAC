@@ -1,12 +1,12 @@
 package auction
 
-import com.ascoop.Future.done
 import auction.DataTypes.{Container, Route, Train}
+import com.ascoop.Future.done
+import com.ascoop.FutureFunctions._
 import com.ascoop.TypedActor
 
 class AuctionOrganizer(trains: List[Train], containers: List[Container]) extends TypedActor {
   import auction.AuctionOrganizer.Result
-  import TypedActor._
 
   def init(timeSlotNow: Double) = messageHandler {
     val trainBidders = trains.map { train =>
