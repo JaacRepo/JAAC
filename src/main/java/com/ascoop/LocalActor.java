@@ -101,7 +101,7 @@ public abstract class LocalActor implements Actor {
 
 	@Override
 	public final <V> Future<V> send(Callable<Future<V>> message) {
-		Task<V> m = new Task<>(message);
+		Task<V> m = new Task<>(message, new Future<>());
 		schedule(m, LOW, NON_STRICT);
 		if (notRunningThenStart()) {
 			ActorSystem.submit(new MainTask());
@@ -111,25 +111,22 @@ public abstract class LocalActor implements Actor {
 
 	@Override
 	public final <V> Future<V> spawn(Guard guard, Callable<Future<V>> message) {
-		Task<V> m = new Task<>(message, guard);
+		Task<V> m = new Task<>(message, new Future<>(), guard);
 		guard.addFuture(this);
 		schedule(m, LOW, NON_STRICT);
 		return m.getResultFuture();
 	}
 
-	// Just make the super implementation final
 	@Override
-	public final <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message) {
-		return Actor.super.getSpawn(f, message);
-	}
-
-	@Override
-	public final <T, V> Future<T> getSpawn(Future<V> f, CallableGet<T, V> message, int priority, boolean strict) {
-        Guard guard = Guard.convert(f);
-        Task<T> m = new Task<>(() -> message.run(f.getOrNull()), guard);
-        guard.addFuture(this);
-        schedule(m, priority, strict);
-        return m.getResultFuture();
+	public final <T, V> Future<T> getSpawn(Future<V> input, CallableGet<T, V> message, int priority, boolean strict) {
+        return getSpawn(new Future<>(), input, message, priority, strict);
     }
 
+	protected final <T, V> Future<T> getSpawn(Future<T> output, Future<V> input, CallableGet<T, V> message, int priority, boolean strict) {
+		Guard guard = Guard.convert(input);
+		Task<T> m = new Task<>(() -> message.run(input.getOrNull()), output, guard);
+		guard.addFuture(this);
+		schedule(m, priority, strict);
+		return output;
+	}
 }

@@ -6,23 +6,23 @@ import java.util.concurrent.Callable;
 public class Task<V> implements Serializable, Runnable {
 	static Callable<Future<Object>> emptyTask = () -> Future.done(null);
 
-	protected Guard enablingCondition = null;
-	protected final Future<V> resultFuture;
-	protected Callable<Future<V>> task;
+	private Guard enablingCondition;
+	private final Future<V> resultFuture;
+	Callable<Future<V>> task;
 
-	Task(Callable<Future<V>> message) {
-		this(message, new Guard() {
+	Task(Callable<Future<V>> message, Future<V> resultFuture) {
+		this(message, resultFuture, new Guard() {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
 			@Override void addFuture(Actor a) { }
 		});
 	}
 
-	Task(Callable<Future<V>> message, Guard enablingCondition) {
+	Task(Callable<Future<V>> message, Future<V> resultFuture, Guard enablingCondition) {
 		if (message == null)
 			throw new NullPointerException();
 		this.task = message;
-		resultFuture = new Future<>();
+		this.resultFuture = resultFuture;
 		this.enablingCondition = enablingCondition;
 	}
 
@@ -40,7 +40,7 @@ public class Task<V> implements Serializable, Runnable {
 		}
 	}
 
-	public Future<V> getResultFuture() {
+	Future<V> getResultFuture() {
 		return resultFuture;
 	}
 }
