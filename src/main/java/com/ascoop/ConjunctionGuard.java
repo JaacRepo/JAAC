@@ -21,11 +21,6 @@ public class ConjunctionGuard extends Guard {
 	}
 
 	@Override
-    Future<?> getFuture() {
-		return null;
-	}
-
-	@Override
 	boolean hasFuture() {
 		return left.hasFuture() || right.hasFuture();
 	}

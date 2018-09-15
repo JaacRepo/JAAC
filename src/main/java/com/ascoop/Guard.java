@@ -8,9 +8,6 @@ public abstract class Guard {
 
 	abstract void addFuture(Actor a);
 
-	abstract Future<?> getFuture();
-
-
 	static public Guard convert(Supplier<Boolean> s) {
 		return new PureExpressionGuard(s);
 	}

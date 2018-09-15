@@ -20,11 +20,6 @@ public class FutureGuard extends Guard {
 	}
 
 	@Override
-    Future<?> getFuture() {
-		return future;
-	}
-
-	@Override
 	boolean hasFuture() {
 		return true;
 	}

@@ -15,7 +15,6 @@ public class Task<V> implements Serializable, Runnable {
 			@Override boolean evaluate() { return true; }
 			@Override boolean hasFuture() { return false;}
 			@Override void addFuture(Actor a) { }
-			@Override Future<?> getFuture() { return null; }
 		});
 	}
 
