@@ -30,6 +30,18 @@ object FunctionalTests extends TypedActor {
       x1 + x2
     }) forEach println
 
+    val nestedFut = f1 map {
+      x1 =>
+        println(s"inside2 $x1")
+        f2 map {
+          x2 =>
+            println(s"$x1 -> $x2")
+            x1 + x2
+        }
+    }
+    nestedFut.flatten.forEach(println)
+    nestedFut.flatten.forEach(println)
+
     println("this should end before other functions awaiting futures")
 
     done
