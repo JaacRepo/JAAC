@@ -4,34 +4,39 @@ import java.util.concurrent.Callable
 import java.util.concurrent.atomic.AtomicBoolean
 
 object FutureFunctions {
+  // TODO: filter, traverse, fold, reduce, fallbackTo, zip, etc.
 
   // to use a value class for less runtime overhead, it must be in companion object, but then it will need to be explicitly imported in actors
   implicit class FutureImplicit[V](val fut: Future[V]) extends AnyVal {
     def onSuccess[R](continuation: CallableGet[R, V])(implicit hostActor: LocalActor): Future[R] =
       hostActor.getSpawn(fut, continuation)
 
-    def map[R](continuation: CallableGet[R, V])(implicit hostActor: LocalActor): Future[R] =
-      hostActor.getSpawn(fut, continuation)
+    def map[R](continuation: V => R)(implicit hostActor: LocalActor): Future[R] =
+      hostActor.getSpawn(fut, (v: V) => Future.done(continuation(v)))
 
-    // TODO: test
-    def flatMap[R](continuation: CallableGet[Future[R], V])(implicit hostActor: LocalActor): Future[R] =
+    def flatMap[R](continuation: V => Future[R])(implicit hostActor: LocalActor): Future[R] =
       fut.map(continuation).flatten
 
-    // TODO: test
     def flatten[R](implicit ev: V <:< Future[R]): Future[R] = {
-      new Future[R] with Actor {
+      val newFuture = new Future[R] with Actor {
         override def send[T](message: Callable[Future[T]]): Future[T] = {
-          fut.getOrNull().asInstanceOf[Future[R]].backLink(this)
+          fut.getOrNull().asInstanceOf[Future[R]].backLink(this) // TODO: could that future have another backlink already?
           null
         }
 
-        override def spawn[V](guard: Guard, message: Callable[Future[V]]): Future[V] = ???
-        override def getSpawn[T, V](f: Future[V], message: CallableGet[T, V], priority: Int, strict: Boolean): Future[T] = ???
+        override def spawn[T](guard: Guard, message: Callable[Future[T]]): Future[T] = ???
+
+        override def getSpawn[R, T](f: Future[T],
+                                    message: CallableGet[R, T],
+                                    priority: Int,
+                                    strict: Boolean): Future[R] = ???
       }
+      fut.awaiting(newFuture)
+      newFuture
     }
 
-    def forEach(continuation: CallableGet[Void, V])(implicit hostActor: LocalActor): Unit =
-      hostActor.getSpawn(fut, continuation)
+    def forEach(continuation: V => Unit)(implicit hostActor: LocalActor): Unit =
+      fut.map(continuation)
 
   }
 
