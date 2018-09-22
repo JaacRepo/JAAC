@@ -10,7 +10,7 @@ public class DisjunctionGuard extends Guard {
 	}
 
 	@Override
-	boolean evaluate(Actor a) {
-		return left.evaluate(a) || right.evaluate(a);
+	boolean evaluate() {
+		return left.evaluate() || right.evaluate();
 	}
 }

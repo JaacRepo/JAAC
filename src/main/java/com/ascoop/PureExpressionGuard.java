@@ -12,7 +12,7 @@ public class PureExpressionGuard extends Guard {
 	}
 
 	@Override
-	boolean evaluate(Actor a) {
+	boolean evaluate() {
 		return expression.get();
 	}
 }

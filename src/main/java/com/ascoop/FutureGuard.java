@@ -2,31 +2,24 @@ package com.ascoop;
 
 import static com.ascoop.Task.emptyTask;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 class FutureGuard<V> extends Guard {
 
 	private Future<V> future;
-	private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
+	private final Actor awaitingActors;
 
-	FutureGuard(Future<V> future) {
+	FutureGuard(Future<V> future, Actor awaitingActors) {
 		super();
 		this.future = future;
+		this.awaitingActors = awaitingActors;
 	}
 
 	@Override
-	boolean evaluate(Actor actor) {
-		awaitingActors.add(actor);
+	boolean evaluate() {
 		return future.isDone(this); // if future has a target, it will reset this guard's future
 	}
 
 	void notifyDependants() {
-		awaitingActors.forEach(this::notifyDependant);
-	}
-
-	private void notifyDependant(Actor localActor) {
-		localActor.send(emptyTask);
+		awaitingActors.send(emptyTask);
 	}
 
 	boolean resetFuture(Future<V> newTarget) {

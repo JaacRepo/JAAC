@@ -12,7 +12,7 @@ public class Task<V> implements Serializable, Runnable {
 
 	Task(Callable<Future<V>> message, Future<V> resultFuture) {
 		this(message, resultFuture, new Guard() {
-			@Override boolean evaluate(Actor a) { return true; }
+			@Override boolean evaluate() { return true; }
 		});
 	}
 
@@ -31,7 +31,7 @@ public class Task<V> implements Serializable, Runnable {
 	@Override
 	public void run() {
 		try {
-			task.call().backLink(resultFuture);  // upon completion, the result is not necessarily ready
+			resultFuture.delegateTo(task.call());  // upon completion, the result is not necessarily ready
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

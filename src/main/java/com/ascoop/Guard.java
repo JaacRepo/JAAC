@@ -3,14 +3,14 @@ package com.ascoop;
 import java.util.function.Supplier;
 
 public abstract class Guard {
-	abstract boolean evaluate(Actor a);
+	abstract boolean evaluate();
 
 	static public Guard convert(Supplier<Boolean> s) {
 		return new PureExpressionGuard(s);
 	}
 
-	static public Guard convert(Future f) {
-		return new FutureGuard(f);
+	static public <V> Guard convert(Future<V> f, Actor awaitingActors) {
+		return new FutureGuard<>(f, awaitingActors);
 	}
 
 	static private Guard convert(Object o) {

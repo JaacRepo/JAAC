@@ -122,7 +122,7 @@ public abstract class LocalActor implements Actor {
     }
 
 	protected final <T, V> Future<T> getSpawn(Future<T> output, Future<V> input, CallableGet<T, V> message, int priority, boolean strict) {
-		FutureGuard<V> guard = new FutureGuard<>(input);
+		FutureGuard<V> guard = new FutureGuard<>(input, this);
 		Task<T> m = new Task<>(() -> message.run(guard.getFuture().getOrNull()), output, guard);
 		schedule(m, priority, strict);
 		return output;
