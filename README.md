@@ -2,6 +2,12 @@
 
 Java implementation of Actors with coroutines. Extended to Scala (ASCOOP) for typechecking method calls.
 
+# Pitfall
+
+Make sure that methods in actors are all using `messageHandler` (or if it is a FSM `stateHandler`).
+This means also that there should be no static `main` method in an actor.
+
+
 # Futures
 
 ## Akka comparison

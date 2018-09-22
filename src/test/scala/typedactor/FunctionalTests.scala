@@ -4,8 +4,14 @@ import com.ascoop.Future.done
 import com.ascoop.{Future, TypedActor}
 import com.ascoop.FutureFunctions._
 
-object FunctionalTests extends TypedActor {
+object StartPoint {
   def main(args: Array[String]): Unit = {
+    new FunctionalTests().start()
+  }
+}
+
+class FunctionalTests extends TypedActor {
+  def start() = messageHandler {
     val a2 = new FTest1
     val a3 = new FTest2
 

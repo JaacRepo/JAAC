@@ -17,9 +17,15 @@ class DSOL extends TypedActor {
   }
 }
 
-object DsolMain extends TypedActor {
-
+object StartPoint {
   def main(args: Array[String]): Unit = {
+    new DsolMain().start()
+  }
+}
+
+class DsolMain extends TypedActor {
+
+  def start(): Unit = {
     val nTrains = 10
     val nContainers = 100
     val Munich = Destination("Munich", 10, 100)
