@@ -3,10 +3,7 @@ package com.ascoop;
 import java.util.function.Supplier;
 
 public abstract class Guard {
-	abstract boolean evaluate();
-	abstract boolean hasFuture();
-
-	abstract void addFuture(Actor a);
+	abstract boolean evaluate(Actor a);
 
 	static public Guard convert(Supplier<Boolean> s) {
 		return new PureExpressionGuard(s);

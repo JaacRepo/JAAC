@@ -112,7 +112,6 @@ public abstract class LocalActor implements Actor {
 	@Override
 	public final <V> Future<V> spawn(Guard guard, Callable<Future<V>> message) {
 		Task<V> m = new Task<>(message, new Future<>(), guard);
-		guard.addFuture(this);
 		schedule(m, LOW, NON_STRICT);
 		return m.getResultFuture();
 	}
@@ -123,9 +122,8 @@ public abstract class LocalActor implements Actor {
     }
 
 	protected final <T, V> Future<T> getSpawn(Future<T> output, Future<V> input, CallableGet<T, V> message, int priority, boolean strict) {
-		Guard guard = Guard.convert(input);
-		Task<T> m = new Task<>(() -> message.run(input.getOrNull()), output, guard);
-		guard.addFuture(this);
+		FutureGuard<V> guard = new FutureGuard<>(input);
+		Task<T> m = new Task<>(() -> message.run(guard.getFuture().getOrNull()), output, guard);
 		schedule(m, priority, strict);
 		return output;
 	}

@@ -23,9 +23,9 @@ import static com.ascoop.Task.emptyTask;
  */
 public class Future<V> {
     private V value = null;
-    private Future<V> dependant = null;
+    private Future<V> target = null;
     private AtomicBoolean completed = new AtomicBoolean(false);
-    private Set<Actor> awaitingActors = ConcurrentHashMap.newKeySet();
+    private Set<FutureGuard> awaiting = ConcurrentHashMap.newKeySet();
 
     Future() {}  // not accessible to arbitrary classes
 
@@ -50,49 +50,23 @@ public class Future<V> {
         return new SequencedFuture<>(futures);
     }
 
-    /**
-     * This method registers an actor such that it will be notified when this future is complete.
-     * By first adding as awaiting and then checking my completeness, we ensure that we do not miss
-     * notification, even though we may notify twice in rare cases.
-     */
-    void awaiting(Actor actor){
-        awaitingActors.add(actor);
-        if (completed.get())
-            notifyDependant(actor);
-    }
-
-    /**
-     * Links this instance to another future whose completion is delegated to this one.
-     * By first adding as dependant and then checking my completeness, we ensure that we do not miss
-     * completing it, even though we may complete it twice in rare cases.
-     */
-    void backLink(Future<V> linkedFuture) {
-        assert dependant == null;
-        dependant = linkedFuture;
-        if (completed.get())
-            dependant.complete(getOrNull());  // getOrNull is overridden in subclasses
-    }
-
     void complete(V value) {
-        if (this.completed.get()) return;  // double notification from delegated future
+//        if (this.completed.get()) return;  // double notification from delegated future
         this.value = value;
         this.completed.set(true);
-        if (dependant != null) {
-            dependant.complete(value);
-        }
-        notifyDependants();
-    }
-
-    protected void notifyDependants() {
-        awaitingActors.forEach(this::notifyDependant);
-    }
-
-    private Future<Object> notifyDependant(Actor localActor) {
-        return localActor.send(emptyTask);
+        awaiting.forEach(FutureGuard::notifyDependants);
     }
 
     boolean isDone() {
         return this.completed.get();
+    }
+
+    boolean isDone(FutureGuard caller) {
+        awaiting.add(caller);
+        if (target == null)
+            return this.completed.get();
+        else
+            return caller.resetFuture(target);
     }
 
     V getOrNull() {
@@ -143,7 +117,7 @@ class SequencedFuture<R> extends Future<List<R>> implements Actor {
 
     @Override
     public <V> Future<V> send(Callable<Future<V>> message) {
-        completed.compareAndSet(false, futures.stream().allMatch(Future::isDone));
+        completed.compareAndSet(false, futures.stream().allMatch(Future::aisDone));
         if (completed.get())
             notifyDependants();
         return null;

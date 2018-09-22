@@ -12,9 +12,7 @@ public class Task<V> implements Serializable, Runnable {
 
 	Task(Callable<Future<V>> message, Future<V> resultFuture) {
 		this(message, resultFuture, new Guard() {
-			@Override boolean evaluate() { return true; }
-			@Override boolean hasFuture() { return false;}
-			@Override void addFuture(Actor a) { }
+			@Override boolean evaluate(Actor a) { return true; }
 		});
 	}
 
