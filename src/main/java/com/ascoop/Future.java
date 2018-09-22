@@ -3,6 +3,7 @@ package com.ascoop;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -60,10 +61,6 @@ public class Future<V> {
         awaiting.forEach(FutureGuard::notifyDependants);
     }
 
-    boolean isDone() {
-        return this.completed.get();
-    }
-
     boolean isDone(FutureGuard<V> caller) {
         awaiting.add(caller);
         if (target == null)
@@ -73,7 +70,10 @@ public class Future<V> {
     }
 
     V getOrNull() {
-        return this.value;
+        if (target == null)
+            return this.value;
+        else
+            return target.getOrNull();
     }
 }
 
@@ -86,15 +86,20 @@ class CompletedFuture<T> extends Future<T> {
 
 class SequencedFuture<R> extends Future<List<R>> {
     SequencedFuture(Collection<Future<R>> futures) {
+        AtomicInteger remaining = new AtomicInteger(futures.size());
+
         for (Future<R> fut : futures) {
-            fut.isDone(new FutureGuard<R>(fut, null) {
+            FutureGuard<R> awaitingGuard = new FutureGuard<R>(fut, null) {
                 @Override
                 void notifyDependants() {
-                    if (futures.stream().allMatch(Future::isDone)) {
+                    if (remaining.decrementAndGet() == 0) {
                         complete(futures.stream().map(Future::getOrNull).collect(Collectors.toList()));
                     }
                 }
-            });
+            };
+            if (fut.isDone(awaitingGuard)) {
+                awaitingGuard.notifyDependants();
+            }
         }
     }
 }

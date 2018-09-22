@@ -1,5 +1,9 @@
 package com.ascoop
 
+import java.lang
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
 object FutureFunctions {
   // TODO: filter, traverse, fold, reduce, fallbackTo, zip, etc.
 
@@ -52,14 +56,18 @@ object FutureFunctions {
   }
 
   def sequence[R](futures: Iterable[Future[R]]): Future[Iterable[R]] = new Future[Iterable[R]] {
+    val remaining = new AtomicInteger(futures.size)
+
     for (fut <- futures) {
-      fut.isDone(
-        new FutureGuard[R](fut, null) {
-          override private[ascoop] def notifyDependants(): Unit = {
-            if (futures.forall(_.isDone)) complete(futures.map(_.getOrNull))
-          }
+      val awaitingGuard = new FutureGuard[R](fut, null) {
+        override private[ascoop] def notifyDependants(): Unit = {
+          if (remaining.decrementAndGet() == 0)
+            complete(futures.map(_.getOrNull))
         }
-      )
+      }
+      if (fut.isDone(awaitingGuard)) {
+        awaitingGuard.notifyDependants()
+      }
     }
   }
 }
