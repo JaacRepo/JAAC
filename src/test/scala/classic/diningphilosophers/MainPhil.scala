@@ -1,6 +1,5 @@
 package classic.diningphilosophers
 
-import com.ascoop.TypedActor
 import com.ascoop.{ActorSystem, TypedActor}
 
 object MainPhil extends TypedActor {

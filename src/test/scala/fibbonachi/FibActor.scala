@@ -1,6 +1,5 @@
 package fibbonachi
 
-import com.ascoop.{Future, TypedActor}
 import com.ascoop.{ActorSystem, Future, TypedActor}
 
 class FibActor(parent: FibActor) extends TypedActor{
@@ -45,8 +44,8 @@ class FibActor(parent: FibActor) extends TypedActor{
     if (parent != null)
       parent.response(n)
     else {
-      System.out.println("Result= " + result)
-      System.out.println(System.currentTimeMillis - t1)
+      println("Result= " + result)
+      println(System.currentTimeMillis - t1)
       t1=System.currentTimeMillis()
 
       //delete this part to run only once
@@ -54,9 +53,9 @@ class FibActor(parent: FibActor) extends TypedActor{
       respReceived=0
       iter= iter-1
       if(iter>0) {
-        if(iter%4==0)
-        this.request(this.N+1)
-        else
+//        if(iter%4==0)
+//        this.request(this.N+1)
+//        else
           this.request(this.N)
       }
       else

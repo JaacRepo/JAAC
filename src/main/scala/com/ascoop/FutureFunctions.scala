@@ -1,7 +1,5 @@
 package com.ascoop
 
-import java.lang
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 object FutureFunctions {

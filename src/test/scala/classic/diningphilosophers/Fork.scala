@@ -1,7 +1,6 @@
 package classic.diningphilosophers
 
 import com.ascoop.Future.done
-import com.ascoop.{Future, TypedActor}
 import com.ascoop.{ActorFsm, Future, TypedActor}
 
 sealed trait FState
@@ -18,7 +17,7 @@ class Fork(name: String) extends TypedActor with ActorFsm {
       println(s"Picked up $name")
       goto(Taken) andReturn done
     case Taken =>
-      println(s"$name is busy...")
+//      println(s"$name is busy...")  // TODO ideally shouldn't do a busy loop here
       goto(Taken) andReturn this.acquire
   }
 
