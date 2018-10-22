@@ -21,7 +21,7 @@ public class DurationGuard extends Guard {
     }
 
     @Override
-    protected void addFuture(Actor a) {TimedActorSystem.addDuration(max,a); }
+    protected void addFuture(Actor a) {TimedActorSystem.addDuration(whenCalled+max,a); }
 
     @Override
     protected ABSFuture<?> getFuture() {

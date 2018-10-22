@@ -20,7 +20,7 @@ public class TimedActorSystem extends ActorSystem {
 
     private static ConcurrentSkipListMap<Integer, List<Actor>> awaitingDurations = new ConcurrentSkipListMap<>();
 
-    private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
+    //private static ConcurrentLinkedQueue<ClassDeploymentComponent> deploymentComponents = new ConcurrentLinkedQueue<>();
 
     private TimedActorSystem() {
     }
@@ -34,13 +34,13 @@ public class TimedActorSystem extends ActorSystem {
         // System.out.println("Done");
         if (runningActors.decrementAndGet() == 0) {
             //System.out.println("Replenishing "+ deploymentComponents.size()+" DCs");
-            for (ClassDeploymentComponent dc :
+            /*for (ClassDeploymentComponent dc :
                     deploymentComponents) {
                 dc.replenish();
-            }
+            }*/
             //get the smallest value to advance time
             SortedSet<Integer> keys = awaitingDurations.keySet();
-            //System.out.println("No running actors "+awaitingDurations);
+            System.out.println("No running actors "+awaitingDurations);
             int advance = keys.first();
             List<Actor> toRealease = awaitingDurations.remove(advance);
             keys.remove(advance);
@@ -82,7 +82,7 @@ public class TimedActorSystem extends ActorSystem {
     }
 
     static void advanceTime(int x) {
-        symbolicTime.addAndGet(x);
+        symbolicTime.set(x);
     }
 
 
@@ -90,8 +90,8 @@ public class TimedActorSystem extends ActorSystem {
         runningActors.incrementAndGet();
     }
 
-    static public void addDC(ClassDeploymentComponent dc) {
+    /*static public void addDC(ClassDeploymentComponent dc) {
         deploymentComponents.add(dc);
-    }
+    }*/
 
 }
