@@ -8,6 +8,7 @@ import scala.util.Random;
 object Functions {
 
   val r = new Random(System.currentTimeMillis());
+  val modelStart = System.currentTimeMillis();
 
   def random(below: Int): Int = {
     r.nextInt(below);
@@ -85,7 +86,9 @@ object Functions {
     return -1;
   }
 
-
+  def ms_since_model_start(): Int= {
+    return (System.currentTimeMillis()-modelStart).toInt
+  }
 
 
 }
